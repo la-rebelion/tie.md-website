@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunktie_md_website=self.webpackChunktie_md_website||[]).push([["416"],{6600(e){e.exports=JSON.parse('{"authors":[{"name":"La Rebelion Labs","title":"Building tools for independent makers","url":"https://rebelion.la","key":"la_rebelion_labs","page":null,"count":1}]}')}}]);

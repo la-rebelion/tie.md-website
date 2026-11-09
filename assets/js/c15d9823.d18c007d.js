@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunktie_md_website=self.webpackChunktie_md_website||[]).push([["431"],{9328(e){e.exports=JSON.parse('{"metadata":{"permalink":"/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Notes about visible, supervised, specification-driven development.","blogTitle":"tie.md notes"}}')}}]);

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="rss.xsl"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>tie.md Blog</title>
+        <link>https://tie.md/blog</link>
+        <description>tie.md Blog</description>
+        <lastBuildDate>Mon, 09 Nov 2026 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[Introducing tie.md: a visible knot for specification-driven work]]></title>
+            <link>https://tie.md/blog/introducing-tie-md</link>
+            <guid>https://tie.md/blog/introducing-tie-md</guid>
+            <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[Why we are building a local-first visual control plane around OpenSpec, coding agents, reusable skills, and Git.]]></description>
+            <content:encoded><![CDATA[<p>The modern development stack has plenty of powerful parts: specifications in Markdown, Git history, reusable agent instructions, focused skills, and coding agents that can implement real work.</p>
+<p>The hard part is remembering how those parts fit together when you return tomorrow.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="great-tools-loose-ends">Great tools, loose ends<a href="https://tie.md/blog/introducing-tie-md#great-tools-loose-ends" class="hash-link" aria-label="Direct link to Great tools, loose ends" title="Direct link to Great tools, loose ends" translate="no">​</a></h2>
+<p>An OpenSpec change may have a proposal, design, specifications, tasks, validation output, an assigned agent, a handful of skills, changed files, tests, and delivery evidence. Each item is inspectable. The whole picture is not.</p>
+<p>That gap creates familiar questions:</p>
+<ul>
+<li class="">Which changes are actually ready?</li>
+<li class="">What is blocked, and by what evidence?</li>
+<li class="">Which agent is allowed to act?</li>
+<li class="">What changed on disk—not just in the agent's summary?</li>
+<li class="">Which requirements are built, tested, passed, or delivered?</li>
+</ul>
+<p>tie.md is an attempt to answer those questions without moving the work into another proprietary system.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="a-control-plane-not-a-replacement">A control plane, not a replacement<a href="https://tie.md/blog/introducing-tie-md#a-control-plane-not-a-replacement" class="hash-link" aria-label="Direct link to A control plane, not a replacement" title="Direct link to A control plane, not a replacement" translate="no">​</a></h2>
+<p>OpenSpec remains authoritative. Markdown and YAML remain reviewable. Git remains Git. Agents keep their own interfaces. tie.md reads that world, presents it through a familiar board and change workspace, and places an explicit human decision before consequential actions.</p>
+<p>The bow-tie mark tells the same story: the specification wing on the left, the agent wing on the right, and the person—the knot—in the middle.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="starting-deliberately-small">Starting deliberately small<a href="https://tie.md/blog/introducing-tie-md#starting-deliberately-small" class="hash-link" aria-label="Direct link to Starting deliberately small" title="Direct link to Starting deliberately small" translate="no">​</a></h2>
+<p>The MVP targets one repository, one operator, and one mutating agent run at a time. It focuses on safe authoring, explicit assignments, supervised execution, and a bidirectional requirements traceability matrix.</p>
+<p>The longer direction includes isolated parallel workspaces, agent teams, verification gates, scripts, MCP inventory, and Git-host integration. Those are directions, not promises. The invariant is more important: people approve consequential transitions, and the evidence remains inspectable.</p>
+<p>Development is happening in the open at the <a href="https://github.com/la-rebelion/tie.md" target="_blank" rel="noopener noreferrer" class="">tie.md repository</a>.</p>]]></content:encoded>
+            <category>tie-md</category>
+            <category>openspec</category>
+            <category>agents</category>
+            <category>local-first</category>
+        </item>
+    </channel>
+</rss>

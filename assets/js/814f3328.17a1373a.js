@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunktie_md_website=self.webpackChunktie_md_website||[]).push([["833"],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Introducing tie.md: a visible knot for specification-driven work","permalink":"/blog/introducing-tie-md","unlisted":false,"date":"2026-11-09T00:00:00.000Z"}]}')}}]);
