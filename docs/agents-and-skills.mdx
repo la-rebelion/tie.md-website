@@ -1,0 +1,51 @@
+---
+title: Agents and skills
+sidebar_position: 4
+description: How tie.md resolves reusable agents, skills, assignments, and trust.
+---
+
+# Agents and skills
+
+tie.md treats agents and skills as reusable project assets, not hidden dropdown values.
+
+## Agent definitions
+
+An MVP agent definition is plain Markdown aligned with `AGENTS.md` conventions:
+
+- the filename provides the local identifier;
+- the first heading provides the display name;
+- configuration supplies adapter and execution bindings;
+- no proprietary frontmatter is required.
+
+## Skill packages
+
+Skills use the existing directory-plus-`SKILL.md` convention. A workspace can resolve them from its own `skills/` directory or from approved shared sources without copying them into the repository.
+
+## Precedence and identity
+
+Workspace configuration takes precedence over user configuration. Duplicate unqualified IDs are errors, not silent overrides. The interface displays:
+
+- a qualified ID such as `workspace:builder` or `company:qa`;
+- the canonical resolved path;
+- workspace or shared provenance;
+- current content identity;
+- trust and conflict diagnostics.
+
+## Assignment sidecar
+
+Change-local assignment metadata lives beside the OpenSpec change:
+
+```yaml
+agent: workspace:builder
+reviewers:
+  - company:qa
+skills:
+  - workspace:typescript
+  - shared:test-strategy
+```
+
+The sidecar ties a specific change to a specific roster agent and set of allowed skills. It does not copy the definitions or grant an agent unrestricted access.
+
+## Trust gate
+
+Definitions outside the workspace remain inspect-only until the user approves their canonical source identity. If that identity changes later, execution is blocked until trust is reviewed again. Secrets and volatile directories are excluded from skill resource access.

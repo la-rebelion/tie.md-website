@@ -1,0 +1,30 @@
+---
+slug: /
+title: tie.md documentation
+sidebar_position: 1
+description: Understand what tie.md is, what it preserves, and where the MVP boundary sits.
+---
+
+# tie.md documentation
+
+tie.md is a local-first visual control plane for [OpenSpec](https://github.com/Fission-AI/OpenSpec) projects. It is designed to make specifications, changes, assignments, agent runs, validation, and requirements evidence easier to inspect without replacing the files or tools that already own that work.
+
+> **Current status:** tie.md is in active MVP development. The documentation describes the intended MVP contract; installable releases will be announced in the [application repository](https://github.com/la-rebelion/tie.md).
+
+## The short version
+
+- **OpenSpec remains authoritative.** Lifecycle state comes from its artifacts, commands, and validation.
+- **Files remain the system of record.** Markdown, YAML, Git, and project files outlive the UI.
+- **Agent work is supervised.** Mutating runs expose the effective agent, skills, instructions, command, output, and changed files.
+- **Traceability requires evidence.** Built, tested, passed, and delivered remain separate states.
+- **Local means local.** The MVP targets loopback serving, offline project work, and no required tie.md account.
+
+## Start here
+
+1. Read the [planned first-run flow](/docs/getting-started).
+2. Understand the [project and lifecycle model](/docs/project-model).
+3. See how [agents and skills](/docs/agents-and-skills) resolve safely.
+4. Learn what the [traceability matrix](/docs/traceability) does—and does not—claim.
+5. Review the [local-first and safety boundaries](/docs/safety-and-local-first).
+
+The full product requirements live with the application source. This site focuses on the parts a pilot user needs to understand before operating the tool.

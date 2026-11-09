@@ -1,0 +1,42 @@
+---
+title: Project and lifecycle model
+sidebar_position: 3
+description: How tie.md projects familiar board states from OpenSpec evidence.
+---
+
+# Project and lifecycle model
+
+One card represents one OpenSpec change. The board is a view over existing artifacts and evidence—not a separate project database.
+
+## Derived board columns
+
+| Column           | Evidence                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------- |
+| Draft            | Required planning artifacts are incomplete.                                                             |
+| Ready            | Required artifacts exist, current validation passes, and no implementation task has started.            |
+| In progress      | A task is complete or an assigned agent run is active, while tasks remain.                              |
+| Review           | Implementation tasks are complete, but validation, traceability, verification, or human review remains. |
+| Ready to archive | Tasks, current checks, trace links, and required verification evidence pass.                            |
+
+Archived changes live in a separate searchable view.
+
+Dragging a card cannot overwrite this truth. If a move implies an OpenSpec action, tie.md opens a confirmation or explains the missing evidence. If no valid transition exists, the card stays where it was.
+
+## Change workspace
+
+Each change preserves stable navigation across:
+
+- overview and proposal;
+- design;
+- specifications;
+- tasks;
+- assigned agent and skills;
+- traceability;
+- validation;
+- activity.
+
+Missing artifacts remain visibly missing. Multiple specification files and nested capability directories are preserved rather than flattened into one generated document.
+
+## External edits and conflicts
+
+The filesystem is shared with editors, CLIs, and agents. Before saving, tie.md compares the file identity captured when the editor opened with the current file on disk. If it changed, the user must reload, compare, or explicitly overwrite. Writes are atomic, and unrelated Markdown formatting should remain untouched.

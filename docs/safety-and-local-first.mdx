@@ -1,0 +1,33 @@
+---
+title: Safety and local-first operation
+sidebar_position: 6
+description: The tie.md execution, filesystem, network, privacy, and approval boundaries.
+---
+
+# Safety and local-first operation
+
+Local-first is an operating constraint, not a decorative label.
+
+## Network boundary
+
+The MVP binds to `127.0.0.1` by default, uses a random session token for local browser access, and is intended to remain fully useful offline. It does not require a tie.md account or upload repository content to a tie.md service.
+
+Your selected coding agent or provider may have its own network and account behavior. tie.md must show the effective adapter and command; it cannot redefine the privacy contract of another tool.
+
+## Filesystem boundary
+
+- Workspace writes stay inside the validated project root.
+- Symlinks and canonical paths are checked before reading or writing.
+- Writes are atomic.
+- External changes produce an explicit conflict instead of silent overwrite.
+- Shared sources are inspected through declared roots and trust rules.
+
+## Execution boundary
+
+Before a mutating run, tie.md previews the effective agent, skills, inherited project instructions, working directory, instruction, and command. The MVP allows one mutating run per workspace at a time and supports cancellation.
+
+Changed-file evidence comes from before-and-after filesystem snapshots, not the agent's self-report. Archive, destructive replacement, and comparable operations require explicit confirmation.
+
+## Logs, telemetry, and secrets
+
+Persistent logs are opt-in. Output is redacted before display or storage, and secret directories are excluded from skill-resource access. MVP telemetry is off by default; any future telemetry must be opt-in and document the exact fields transmitted.

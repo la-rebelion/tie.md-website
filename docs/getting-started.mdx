@@ -1,0 +1,56 @@
+---
+title: Getting started
+sidebar_position: 2
+description: The planned tie.md MVP onboarding and supervised workflow.
+---
+
+# Getting started
+
+The planned CLI entry point is:
+
+```bash
+cd /path/to/an/openspec-project
+tie serve
+```
+
+This command is part of the MVP contract, not a claim that a public package is already available. Check [GitHub](https://github.com/la-rebelion/tie.md) for release artifacts and current installation instructions.
+
+## What tie.md detects
+
+On launch, tie.md examines one workspace and reports what it can safely resolve:
+
+- the project root and installed OpenSpec version;
+- active and archived OpenSpec changes;
+- the Git working tree and recent history;
+- workspace `.tie/config.yaml` and user `~/.tie/config.yaml`;
+- local and shared agent-roster sources;
+- local and shared skill sources;
+- `.tie/rtm.yaml`, baselines, and trace evidence when present.
+
+Detection is read-only. Missing or invalid sources must be shown as missing or invalid rather than silently initialized.
+
+## The primary workflow
+
+1. **Orient on the board.** Find active changes, validation problems, unassigned work, and the next incomplete task.
+2. **Open a change workspace.** Read its proposal, design, specifications, tasks, assignment, validation, activity, and traceability.
+3. **Shape or edit the work.** Use rendered, source, or split Markdown views while preserving external edits and formatting.
+4. **Validate.** Run the installed OpenSpec command and map diagnostics back to the relevant artifact.
+5. **Assign deliberately.** Select one named agent, permitted skills, and optional reviewers from resolved sources.
+6. **Preview and approve a run.** Inspect the adapter, working directory, instruction, and exact command before execution.
+7. **Review evidence.** Compare changed files, rerun validation, confirm trace links, and decide whether archive gates are satisfied.
+
+## Recommended workspace shape
+
+```text
+my-project/
+├── src/
+├── openspec/
+├── agent-roster/
+├── skills/
+├── .tie/
+│   ├── config.yaml
+│   └── rtm.yaml
+└── AGENTS.md
+```
+
+Colocation is the default, not a restriction. Configuration may reference approved shared sources by relative or absolute path. The UI must always display the canonical source and whether it is workspace-local or shared.

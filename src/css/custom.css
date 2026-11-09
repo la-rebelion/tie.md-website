@@ -1,0 +1,310 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  --ifm-color-primary: #0b7189;
+  --ifm-color-primary-dark: #0a667c;
+  --ifm-color-primary-darker: #095f74;
+  --ifm-color-primary-darkest: #084f60;
+  --ifm-color-primary-light: #0c7c96;
+  --ifm-color-primary-lighter: #0d839e;
+  --ifm-color-primary-lightest: #1193b0;
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f5f7f9;
+  --ifm-font-family-base: "Inter", system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --ifm-heading-font-family: "Inter", system-ui, -apple-system, sans-serif;
+  --ifm-heading-font-weight: 800;
+  --ifm-font-color-base: #14202b;
+  --ifm-navbar-background-color: #141a24;
+  --ifm-navbar-link-color: #c4ced8;
+  --ifm-navbar-link-hover-color: #ffffff;
+  --ifm-footer-background-color: #141a24;
+  --ifm-code-font-size: 92%;
+  --ifm-global-radius: 10px;
+  --docusaurus-highlighted-code-line-bg: rgba(17, 147, 176, 0.14);
+  --tie-brand: #1193b0;
+  --tie-brand-strong: #0b6f86;
+  --tie-teal: #08aea6;
+  --tie-orange: #ff7a2c;
+  --tie-accent: #da7756;
+  --tie-ink: #14202b;
+  --tie-muted: #556270;
+  --tie-hairline: #d7dde3;
+  --tie-dark: #141a24;
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #4cc0da;
+  --ifm-color-primary-dark: #32b7d5;
+  --ifm-color-primary-darker: #27b2d1;
+  --ifm-color-primary-darkest: #228fac;
+  --ifm-color-primary-light: #66c9df;
+  --ifm-color-primary-lighter: #73cee2;
+  --ifm-color-primary-lightest: #9cdeeb;
+  --ifm-background-color: #101620;
+  --ifm-background-surface-color: #1a202b;
+  --ifm-font-color-base: #e6edf3;
+  --ifm-navbar-background-color: #101620;
+  --ifm-footer-background-color: #0c1119;
+  --docusaurus-highlighted-code-line-bg: rgba(76, 192, 218, 0.16);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  text-rendering: optimizeLegibility;
+}
+:focus-visible {
+  outline: 2px solid var(--tie-brand);
+  outline-offset: 3px;
+}
+
+.navbar {
+  border-bottom: 1px solid #232b38;
+  box-shadow: none;
+}
+.navbar__brand {
+  color: #eef2f6;
+  letter-spacing: -0.035em;
+}
+.navbar__title {
+  font-weight: 800;
+}
+.navbar__logo {
+  height: 2.15rem;
+}
+.navbar__github {
+  border: 1px solid #3a4656;
+  border-radius: 9px;
+  margin-left: 0.35rem;
+  padding-inline: 0.9rem;
+}
+.navbar__github:hover {
+  border-color: #4cc0da;
+}
+
+.navbar__link[href^="https://tie.md/#"] svg,
+.footer__link-item[href^="https://tie.md/#"] svg {
+  display: none;
+}
+.navbar-sidebar {
+  --ifm-navbar-background-color: #141a24;
+  color: #eef2f6;
+}
+.footer {
+  border-top: 1px solid #2f3947;
+}
+.footer__title,
+.footer__link-item,
+.footer__copyright {
+  color: #c4ced8;
+}
+
+.theme-doc-markdown h1,
+.theme-blog-post-page h1 {
+  letter-spacing: -0.035em;
+}
+.theme-doc-markdown h2,
+.theme-blog-post-page h2 {
+  letter-spacing: -0.02em;
+}
+.theme-doc-markdown blockquote {
+  background: var(--ifm-background-surface-color);
+  border-left-color: var(--tie-orange);
+  border-radius: 0 10px 10px 0;
+  color: var(--ifm-font-color-base);
+  padding: 1rem 1.25rem;
+}
+
+.tie-modal-backdrop {
+  align-items: center;
+  background: rgba(5, 9, 14, 0.82);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  z-index: 1000;
+}
+
+.tie-modal-backdrop[hidden] {
+  display: none;
+}
+
+.tie-modal {
+  background:
+    radial-gradient(
+      circle at 92% 6%,
+      rgba(17, 147, 176, 0.18),
+      transparent 34%
+    ),
+    #141a24;
+  border: 1px solid #3a4656;
+  border-radius: 18px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.52);
+  color: #eef2f6;
+  max-width: 610px;
+  overflow: hidden;
+  padding: clamp(1.6rem, 5vw, 2.6rem);
+  position: relative;
+  width: 100%;
+}
+
+.tie-modal::after {
+  background: linear-gradient(90deg, #08aea6 0 50%, #ff7a2c 50%);
+  content: "";
+  height: 3px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.tie-modal-close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #9aa7b5;
+  cursor: pointer;
+  display: flex;
+  font:
+    300 1.75rem/1 Inter,
+    sans-serif;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.65rem;
+  width: 44px;
+}
+
+.tie-modal-close:hover {
+  color: #ffffff;
+}
+
+.tie-modal-mark {
+  display: block;
+  height: 64px;
+  margin: -0.65rem 0 0.75rem -0.65rem;
+  width: 64px;
+}
+
+.tie-modal-eyebrow {
+  color: #4cc0da;
+  font:
+    600 0.72rem/1.4 "JetBrains Mono",
+    monospace;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.65rem;
+  text-transform: uppercase;
+}
+
+.tie-modal h2 {
+  color: #eef2f6;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  margin: 0;
+  max-width: 12ch;
+}
+
+.tie-modal-copy {
+  color: #c4ced8;
+  line-height: 1.65;
+  margin: 1rem 0 1.4rem;
+  max-width: 52ch;
+}
+
+.tie-newsletter-form {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.tie-newsletter-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.tie-newsletter-field span {
+  color: #c4ced8;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.tie-newsletter-field input {
+  background: #101620;
+  border: 1px solid #3a4656;
+  border-radius: 10px;
+  color: #eef2f6;
+  font:
+    500 0.95rem/1 Inter,
+    sans-serif;
+  height: 50px;
+  min-width: 0;
+  padding: 0 0.95rem;
+  width: 100%;
+}
+
+.tie-newsletter-field input::placeholder {
+  color: #788696;
+}
+
+.tie-newsletter-submit {
+  align-self: end;
+  background: #da7756;
+  border: 0;
+  border-radius: 10px;
+  color: #1a1410;
+  cursor: pointer;
+  font:
+    700 0.9rem/1 Inter,
+    sans-serif;
+  height: 50px;
+  padding: 0 1.15rem;
+}
+
+.tie-newsletter-submit:hover {
+  background: #e58a6b;
+}
+
+.tie-newsletter-note {
+  color: #9aa7b5;
+  font-size: 0.72rem;
+  grid-column: 1 / -1;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.tie-newsletter-note a {
+  color: #9cdeeb;
+}
+
+@media (max-width: 600px) {
+  .tie-modal {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+
+  .tie-newsletter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .tie-newsletter-submit {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
