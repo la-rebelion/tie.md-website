@@ -2,13 +2,18 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import { themes as prismThemes } from "prism-react-renderer";
 
+// Hubspot account id
+const hubspot = {
+  accountId: '21339207',
+};
+
 const landingUrl =
   process.env.NODE_ENV === "development" ? "" : "https://tie.md";
 const landingSection = (section: string) => `${landingUrl}/#${section}`;
 
 const config: Config = {
   title: "tie.md",
-  tagline: "A local-first visual control plane for OpenSpec projects",
+  tagline: "A local-first visual control plane for SDD-first projects",
   favicon: "img/tie-mark.svg",
   future: { v4: true },
   url: "https://tie.md",
@@ -42,6 +47,10 @@ const config: Config = {
           onUntruncatedBlogPosts: "warn",
         },
         theme: { customCss: "./src/css/custom.css" },
+        gtag: {
+          trackingID: 'GTM-MSVN7V57',
+          anonymizeIP: true,
+        },
         sitemap: {
           changefreq: "weekly",
           priority: 0.5,
@@ -51,6 +60,12 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
+  scripts: [
+    {
+      src: 'https://js.hsforms.net/forms/embed/v2.js',
+      async: true,
+    },
+  ],
   headTags: [
     {
       tagName: "script",
@@ -58,7 +73,7 @@ const config: Config = {
         async: "true",
         defer: "true",
         id: "hs-script-loader",
-        src: "https://js.hs-scripts.com/21339207.js",
+        src: `//js.hs-scripts.com/${hubspot.accountId}.js`,
         type: "text/javascript",
       },
     },
