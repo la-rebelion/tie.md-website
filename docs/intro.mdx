@@ -2,29 +2,35 @@
 slug: /
 title: tie.md documentation
 sidebar_position: 1
-description: Understand what tie.md is, what it preserves, and where the MVP boundary sits.
+description: Understand what tie.md is, who it is for, and where to start—whether or not you already use spec-driven development and OpenSpec.
 ---
 
 # tie.md documentation
 
-tie.md is a local-first visual control plane for [OpenSpec](https://github.com/Fission-AI/OpenSpec) projects. It is designed to make specifications, changes, assignments, agent runs, validation, and requirements evidence easier to inspect without replacing the files or tools that already own that work.
+tie.md is a local-first visual control plane for [OpenSpec](/docs/concepts/openspec) projects. It shows your specifications, changes, agent assignments, supervised agent runs, validation, and requirements evidence in one place—without replacing the Markdown files, Git history, or coding agents that already do the work.
 
-> **Current status:** tie.md is in active MVP development. The documentation describes the intended MVP contract; installable releases will be announced in the [application repository](https://github.com/la-rebelion/tie.md).
+> **Current status:** v0.1.0 is a release candidate. Installers go live with the tagged release; follow the [application repository](https://github.com/la-rebelion/tie.md) for status.
+
+## Where to start
+
+| If you…                                        | Start with                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| are new to spec-driven development or OpenSpec | [Concepts](/docs/concepts) — short primers on SDD, OpenSpec, coding agents, and traceability.           |
+| already use OpenSpec and want to try tie.md    | [Getting started](/docs/getting-started) — install, open a workspace, first tour.                       |
+| want to know what tie.md adds and why          | [The tie.md model](/docs/concepts/tie-md-model) — workspace, board, assignment, handoff, run, evidence. |
+| need to configure agents, skills, or sources   | [Configuration](/docs/configuration) and [Agents and skills](/docs/agents-and-skills).                  |
+| care about security and privacy                | [Safety and local-first operation](/docs/safety-and-local-first).                                       |
 
 ## The short version
 
 - **OpenSpec remains authoritative.** Lifecycle state comes from its artifacts, commands, and validation.
-- **Files remain the system of record.** Markdown, YAML, Git, and project files outlive the UI.
-- **Agent work is supervised.** Mutating runs expose the effective agent, skills, instructions, command, output, and changed files.
-- **Traceability requires evidence.** Built, tested, passed, and delivered remain separate states.
-- **Local means local.** The MVP targets loopback serving, offline project work, and no required tie.md account.
+- **Files remain the system of record.** Markdown, YAML, and Git outlive the UI; there is no export step if you stop using tie.md.
+- **Agent work is supervised.** Every run shows the agent, skills, instructions, and exact command first, and you approve it.
+- **Evidence beats claims.** Changed files come from before/after snapshots; "tested" and "delivered" need real evidence, not an agent's summary.
+- **Local means local.** The service listens on `127.0.0.1`, works offline, and needs no tie.md account.
 
-## Start here
+## Who it is for
 
-1. Read the [planned first-run flow](/docs/getting-started).
-2. Understand the [project and lifecycle model](/docs/project-model).
-3. See how [agents and skills](/docs/agents-and-skills) resolve safely.
-4. Learn what the [traceability matrix](/docs/traceability) does—and does not—claim.
-5. Review the [local-first and safety boundaries](/docs/safety-and-local-first).
-
-The full product requirements live with the application source. This site focuses on the parts a pilot user needs to understand before operating the tool.
+- **Developers** using AI coding agents who want to see and control what those agents do.
+- **Tech leads and reviewers** who need to know which changes are ready, blocked, or waiting for review.
+- **Product managers, analysts, and QA** who need to follow requirements to tests and releases without reading every diff.

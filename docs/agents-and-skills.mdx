@@ -6,7 +6,7 @@ description: How tie.md resolves reusable agents, skills, assignments, and trust
 
 # Agents and skills
 
-tie.md treats agents and skills as reusable project assets, not hidden dropdown values.
+tie.md treats agents and skills as reusable project assets, not hidden dropdown values. For the background, see [Coding agents and skills](/docs/concepts/coding-agents-and-skills).
 
 ## Agent definitions
 
@@ -14,12 +14,40 @@ An MVP agent definition is plain Markdown aligned with `AGENTS.md` conventions:
 
 - the filename provides the local identifier;
 - the first heading provides the display name;
+- the rest of the file is the agent's instruction text;
 - configuration supplies adapter and execution bindings;
 - no proprietary frontmatter is required.
+
+```md title="agent-roster/builder.md"
+# Builder
+
+Implement only approved tasks and report verification separately.
+```
+
+Bind it to a coding-agent CLI in [configuration](/docs/configuration):
+
+```yaml title=".tie/config.yaml"
+agents:
+  team-agents:builder:
+    adapter: codex # codex | claude | copilot
+    skills: [team-skills:testing]
+    phases: [apply]
+```
 
 ## Skill packages
 
 Skills use the existing directory-plus-`SKILL.md` convention. A workspace can resolve them from its own `skills/` directory or from approved shared sources without copying them into the repository.
+
+```md title="skills/testing/SKILL.md"
+---
+name: testing
+description: Verify approved behavior with deterministic evidence.
+---
+
+Read [the checklist](references/checklist.md) before testing.
+```
+
+Referenced files must stay inside the skill's folder; a missing resource or a path that escapes the package makes the skill invalid for execution.
 
 ## Precedence and identity
 
@@ -35,16 +63,27 @@ Workspace configuration takes precedence over user configuration. Duplicate unqu
 
 Change-local assignment metadata lives beside the OpenSpec change:
 
-```yaml
-agent: workspace:builder
-reviewers:
-  - company:qa
-skills:
-  - workspace:typescript
-  - shared:test-strategy
+```yaml title="openspec/changes/add-export-cancel/.tie.yaml"
+version: 1
+primaryAgent: team-agents:builder
+reviewers: [company:qa]
+allowedSkills: [team-skills:typescript, shared:test-strategy]
+revision: 01900000-0000-7000-8000-000000000000
 ```
 
-The sidecar ties a specific change to a specific roster agent and set of allowed skills. It does not copy the definitions or grant an agent unrestricted access.
+`revision` lets tie.md detect that someone else changed the file since you opened it. The sidecar moves with the change when OpenSpec archives it.
+
+The sidecar ties a specific change to a specific roster agent and set of allowed skills. It does not copy the definitions or grant an agent unrestricted access, and **assigning starts nothing**: a run needs a separate handoff preview and your approval.
+
+## Supported coding agents
+
+| Adapter   | CLI invoked                                        | Notes              |
+| --------- | -------------------------------------------------- | ------------------ |
+| `codex`   | `codex exec <instruction>`                         | OpenAI Codex CLI   |
+| `claude`  | `claude --print <instruction>`                     | Claude Code        |
+| `copilot` | `copilot --prompt <instruction> --allow-all-tools` | GitHub Copilot CLI |
+
+Install and sign in to each CLI yourself; tie.md never handles provider credentials. If a CLI is missing, its agents show as unavailable with the reason.
 
 ## Trust gate
 

@@ -1,0 +1,34 @@
+---
+title: Concepts
+sidebar_position: 1
+slug: /concepts
+description: The ideas behind tie.md—spec-driven development, OpenSpec, coding agents, traceability—and the vocabulary tie.md adds on top.
+---
+
+# Concepts
+
+tie.md sits on top of practices and tools you may or may not already use. This section explains them in plain terms, then shows exactly what tie.md adds.
+
+Read in order if you are new; jump around if you are not.
+
+## The general ideas
+
+These exist independently of tie.md. If you already work this way, skim them for the vocabulary.
+
+| Page                                                                  | You will learn                                                                                            | Skip if you already know…                       |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [Spec-driven development](/docs/concepts/spec-driven-development)     | Why teams write the specification before the code, and why it matters more with AI agents.                | SDD, "specs as source of truth"                 |
+| [OpenSpec](/docs/concepts/openspec)                                   | The open-source SDD framework tie.md is built for: specs, changes, proposals, tasks, validation, archive. | the `openspec/` folder and its CLI              |
+| [Coding agents and skills](/docs/concepts/coding-agents-and-skills)   | What AI coding agents are, what `AGENTS.md` and `SKILL.md` do, and why supervision matters.               | Codex / Claude Code / Copilot CLI, agent skills |
+| [Requirements traceability](/docs/concepts/requirements-traceability) | How a requirement is linked to the design, code, tests, and release that prove it.                        | RTMs, coverage vs. code coverage                |
+
+## How tie.md fits
+
+| Page                                            | You will learn                                                                                                          |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [The tie.md model](/docs/concepts/tie-md-model) | Workspace, Studio, board, change workspace, sources, roster, assignment, handoff, run, evidence, trust—how they relate. |
+| [Glossary](/docs/concepts/glossary)             | One-line definitions of every term used in these docs.                                                                  |
+
+## The one-paragraph version
+
+You describe **what** should change in plain Markdown files (a _spec-driven_ workflow). **OpenSpec** gives those files a standard shape and a CLI that validates and archives them. A **coding agent** then does the implementation, guided by reusable **skills**. **tie.md** is a local app that reads all of that from your repository and shows it as one board you can supervise: who is assigned, what the agent is about to run, which files it actually changed, and which requirements have real evidence behind them. Everything stays in your files and your Git history.

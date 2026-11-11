@@ -1,75 +1,138 @@
 ---
 title: Getting started
 sidebar_position: 2
-description: Install tie.md v0.1.0 and open a local OpenSpec workspace.
+description: Install tie.md v0.1.0, open your first OpenSpec workspace, and take a guided first tour of the Studio.
 ---
 
 # Getting started
 
-## Install the release candidate
+This guide takes you from nothing to a running Studio in about ten minutes. If terms like _spec-driven development_, _OpenSpec_, or _change_ are new, read [Concepts](/docs/concepts) first—or keep it open alongside.
 
-The public installers select the correct compiled binary and verify it against the release's
-SHA-256 checksums:
+## 1. Prerequisites
+
+| You need                        | Why                                                                               | Check                                                      |
+| ------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Git**                         | tie.md reads history and the working tree (it never commits for you).             | `git --version`                                            |
+| **OpenSpec CLI 1.16.x**         | tie.md runs it to list, validate, and archive changes.                            | `openspec --version`                                       |
+| A coding-agent CLI _(optional)_ | Only to run agents: Codex, Claude Code, or GitHub Copilot CLI, already signed in. | `codex --version`, `claude --version`, `copilot --version` |
+
+Install OpenSpec with npm if you do not have it:
 
 ```bash
+npm install --global @fission-ai/openspec@1.16
+```
+
+You can explore the board, read and edit changes, validate, and use traceability without any coding agent installed.
+
+## 2. Install tie.md
+
+```bash
+# Linux and macOS
 curl -fsSL https://tie.md/install.sh | sh
 ```
 
 ```powershell
+# Windows (PowerShell)
 irm https://tie.md/install.ps1 | iex
 ```
 
-Review the scripts, supported platforms, npm option, and manual verification path on the
-[installation page](/install). These commands become downloadable when v0.1.0 is published.
+The installers download the native binary for your platform from the GitHub release and verify its SHA-256 checksum. Prefer npm? See the [installation page](/install) for `npm install --global @tie-md/cli@0.1.0` and manual downloads.
 
-## Open a workspace
+:::note[Release candidate]
+These commands work once v0.1.0 is published. Follow [GitHub](https://github.com/la-rebelion/tie.md) for release status.
+:::
 
-Run the CLI from an OpenSpec project or pass its path explicitly:
+Confirm it works:
 
 ```bash
-cd /path/to/an/openspec-project
-tie serve
+tie --version
 ```
 
-Until the tagged release is available, check [GitHub](https://github.com/la-rebelion/tie.md) for
-release status and build evidence.
+## 3. Have an OpenSpec project
 
-## What tie.md detects
+tie.md opens an existing project; it does not create one for you. If your repository has no `openspec/` folder yet:
 
-On launch, tie.md examines one workspace and reports what it can safely resolve:
+```bash
+cd ~/code/my-app
+openspec init
+```
 
-- the project root and installed OpenSpec version;
-- active and archived OpenSpec changes;
-- the Git working tree and recent history;
-- workspace `.tie/config.yaml` and user `~/.tie/config.yaml`;
-- local and shared agent-roster sources;
-- local and shared skill sources;
-- `.tie/rtm.yaml`, baselines, and trace evidence when present.
+Then create a first change, either by asking your coding agent to _propose_ one (OpenSpec installs that workflow) or by hand—see [OpenSpec](/docs/concepts/openspec) for the folder layout.
 
-Detection is read-only. Missing or invalid sources must be shown as missing or invalid rather than silently initialized.
+## 4. Check the workspace (optional)
 
-## The primary workflow
+`tie inspect` reports what tie.md will use, without starting anything or writing a file:
 
-1. **Orient on the board.** Find active changes, validation problems, unassigned work, and the next incomplete task.
-2. **Open a change workspace.** Read its proposal, design, specifications, tasks, assignment, validation, activity, and traceability.
-3. **Shape or edit the work.** Use rendered, source, or split Markdown views while preserving external edits and formatting.
-4. **Validate.** Run the installed OpenSpec command and map diagnostics back to the relevant artifact.
-5. **Assign deliberately.** Select one named agent, permitted skills, and optional reviewers from resolved sources.
-6. **Preview and approve a run.** Inspect the adapter, working directory, instruction, and exact command before execution.
-7. **Review evidence.** Compare changed files, rerun validation, confirm trace links, and decide whether archive gates are satisfied.
+```console
+$ tie inspect ~/code/my-app
+Workspace: /home/you/code/my-app
+OpenSpec: /home/you/code/my-app/openspec
+Git: /home/you/code/my-app
+Writable: yes
+```
 
-## Recommended workspace shape
+## 5. Start the Studio
+
+```console
+$ cd ~/code/my-app
+$ tie serve
+tie.md 0.1.0 serving /home/you/code/my-app
+Studio: http://127.0.0.1:4317/launch?capability=…
+```
+
+Your browser opens the Studio. The link is one-time: it signs this browser in to the local service, which only listens on `127.0.0.1`. Press **Ctrl+C** in the terminal to stop.
+
+| Option                                     | Effect                                                      |
+| ------------------------------------------ | ----------------------------------------------------------- |
+| `tie serve <path>` or `--workspace <path>` | Open a workspace other than the current folder.             |
+| `--port <n>`                               | Use another port (default `4317`). A busy port is an error. |
+| `--no-open`                                | Print the Studio link without opening a browser.            |
+| `tie inspect --json`                       | Machine-readable workspace report.                          |
+
+Exit codes: `0` success, `2` usage error, `3` workspace or data-compatibility problem, `4` service could not start.
+
+## 6. A first tour
+
+1. **Board** (Changes). Each card is one OpenSpec change, placed in a column computed from its files: _Draft, Ready, In progress, Review, Ready to archive_. Cards show task progress, validation state, and assignment.
+2. **Open a card.** The change workspace has tabs for **Proposal, Design, Specifications, Tasks, Agent & skills, Validation, Trace,** and **Activity**. Toggle **Rendered / Source / Split** to read or edit Markdown. Checking a task updates `tasks.md` directly.
+3. **Validate.** Choose **Validate** on the change and see OpenSpec's exact command and diagnostics, mapped to the artifact they concern.
+4. **Agents and Skills.** See what tie.md found in your configured sources, and whether each is valid and trusted.
+5. **Traceability.** If `.tie/rtm.yaml` exists, see which requirements have tests and evidence—and which do not.
+6. **Settings.** Check the effective configuration, its origins, and choose lifecycle terminology.
+
+Make an edit to a change file in your own editor: the Studio updates within a moment.
+
+## 7. Your first supervised run (optional)
+
+Needs a coding-agent CLI and at least one roster agent—see [Configuration](/docs/configuration) and [Agents and skills](/docs/agents-and-skills).
+
+1. In a change, open the **Agent & skills** tab and choose a primary agent and allowed skills. This only writes the change's `.tie.yaml`; nothing runs.
+2. Choose **Start agent run…** and read the **handoff preview**: agent, CLI, working directory, skills, project instructions, the full instruction, and the exact command.
+3. Choose **Approve and start**. Watch output in the **run dock**; **Stop** ends the agent and its child processes.
+4. Review the **changed files** tie.md recorded, re-run validation, and confirm any proposed trace links.
+
+## Recommended workspace layout
 
 ```text
-my-project/
-├── src/
-├── openspec/
-├── agent-roster/
-├── skills/
+my-app/
+├── openspec/          ← specs and changes (OpenSpec)
+├── agent-roster/      ← agent definitions, one Markdown file each (optional)
+├── skills/            ← SKILL.md packages (optional)
 ├── .tie/
-│   ├── config.yaml
-│   └── rtm.yaml
-└── AGENTS.md
+│   ├── config.yaml    ← tie.md workspace configuration (optional)
+│   └── rtm.yaml       ← traceability data (optional)
+├── AGENTS.md          ← project instructions for every agent (optional)
+└── src/
 ```
 
-Colocation is the default, not a restriction. Configuration may reference approved shared sources by relative or absolute path. The UI must always display the canonical source and whether it is workspace-local or shared.
+This colocated layout is the default, not a requirement: configuration can point at shared folders elsewhere.
+
+## Troubleshooting
+
+- **"Workspace error" / exit code 3** – the path is not readable, or the workspace's tie.md data was written by a newer version. Run `tie inspect --json` for details.
+- **Port already in use / exit code 4** – another process uses `4317`; pass `--port`.
+- **"OpenSpec not found" or writes blocked** – install OpenSpec 1.16.x and make sure `openspec` is on your `PATH`.
+- **An agent shows as unavailable** – install and sign in to that CLI, then reload; the adapter is probed at startup.
+- **Browser did not open** – copy the `Studio:` link from the terminal (use it once).
+
+Next: understand [the tie.md model](/docs/concepts/tie-md-model), or read the [Board and lifecycle](/docs/project-model) guide.

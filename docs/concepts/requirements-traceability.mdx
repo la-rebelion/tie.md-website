@@ -1,0 +1,48 @@
+---
+title: Requirements traceability
+sidebar_position: 5
+description: What a requirements traceability matrix (RTM) is, why "tested" and "delivered" need evidence, and how this differs from code coverage.
+---
+
+# Requirements traceability
+
+**Requirements traceability** means being able to follow each requirement to everything that implements and proves it—and back again. The classic tool is a **requirements traceability matrix (RTM)**: a table with one row per requirement and columns for its design, tasks, code, tests, defects, and release.
+
+## Why it matters
+
+Traceability answers questions every project eventually asks:
+
+- _Is every requirement actually tested?_ (forward: requirement → tests)
+- _Why does this code exist?_ (backward: code → requirement)
+- _If I change this file, what could break?_ (impact analysis)
+- _What exactly did release 1.2 deliver?_ (release evidence)
+- _What work slipped in that nobody asked for?_ (scope creep)
+
+It is common in regulated domains, but it is just as useful when AI agents produce large amounts of code quickly and you need to know what is really done.
+
+## Links and evidence
+
+An RTM is built from **links** between **nodes**:
+
+```text
+requirement → design → task → code → test → defect / change request → release
+```
+
+A link is only as good as its evidence. Three distinctions matter:
+
+- **Done ≠ tested ≠ passed ≠ delivered.** A checked task means someone says it is implemented. _Tested_ means a test exists. _Passed_ means current test results pass. _Delivered_ means a release contains it.
+- **Evidence goes stale.** If a requirement or its code changes after a test passed, that pass no longer proves the current version.
+- **Suggestions are not facts.** Tools (including AI) can _suggest_ links; a person confirms them.
+
+## Requirement coverage vs. code coverage
+
+_Code coverage_ measures how many lines of code tests execute. _Requirement coverage_ measures how many agreed requirements have passing tests that verify them. You can have 95 % code coverage and still have untested requirements—or the reverse. They answer different questions; an RTM tracks the second.
+
+## Baselines and waivers
+
+- A **baseline** is a named snapshot of the agreed requirement scope. Comparing against it shows what was added, changed, or removed since.
+- A **waiver** is an explicit, recorded decision to accept a gap (for example, "manual test only for v0.1"), with a rationale, author, and optional expiry—so gaps are visible rather than forgotten.
+
+## In tie.md
+
+tie.md keeps its RTM in a plain file, `.tie/rtm.yaml`, generated from your OpenSpec requirements and scenarios and extended with confirmed links, baselines, waivers, and deliveries. The **Traceability** view shows the matrix, gaps, and impact; archive and release gates use the same data. See the [Traceability guide](/docs/traceability).

@@ -1,0 +1,87 @@
+---
+title: OpenSpec
+sidebar_position: 3
+description: A practical primer on OpenSpec—specs, changes, artifacts, deltas, validation, and archive—and how tie.md uses it.
+---
+
+# OpenSpec
+
+[OpenSpec](https://github.com/Fission-AI/OpenSpec) is an open-source framework and command-line tool for [spec-driven development](/docs/concepts/spec-driven-development). It defines where specifications live in your repository, what a proposed change looks like, and how changes are validated and merged into the specs.
+
+tie.md is a visual layer for OpenSpec projects. **OpenSpec stays in charge**: tie.md reads its files, runs its CLI, and never invents its own lifecycle state.
+
+## The folder
+
+```text
+openspec/
+├── specs/                         ← the current, agreed behavior ("source of truth")
+│   └── user-export/
+│       └── spec.md
+└── changes/                       ← proposed modifications, one folder each
+    ├── add-export-cancel/
+    │   ├── proposal.md            ← why, and what changes
+    │   ├── design.md              ← technical decisions (optional for small changes)
+    │   ├── tasks.md               ← checklist of implementation steps
+    │   └── specs/
+    │       └── user-export/
+    │           └── spec.md        ← the *delta* this change makes to the spec
+    └── archive/                   ← completed changes, kept for history
+```
+
+## Key ideas
+
+### Specs
+
+A **spec** describes one capability (for example `user-export`) as a list of **requirements**, each with one or more **scenarios**:
+
+```md
+### Requirement: Cancel a running export
+
+The system SHALL let the user cancel an export that is in progress.
+
+#### Scenario: User cancels
+
+- **WHEN** the user selects Cancel while an export is running
+- **THEN** the export stops and no partial file is kept
+```
+
+### Changes
+
+A **change** is a folder under `openspec/changes/` that proposes new or modified behavior. It is the unit of work: one change ≈ one feature, fix, or refactor. Its files are called **artifacts**:
+
+| Artifact           | Purpose                                                                  |
+| ------------------ | ------------------------------------------------------------------------ |
+| `proposal.md`      | Why the change is needed, what changes, which capabilities are affected. |
+| `design.md`        | How it will be built: decisions, trade-offs, risks.                      |
+| `specs/**/spec.md` | **Deltas**—requirements this change ADDS, MODIFIES, or REMOVES.          |
+| `tasks.md`         | A Markdown checklist (`- [ ]` / `- [x]`) of implementation steps.        |
+
+The exact artifact set is defined by a **schema** (the default is `spec-driven`).
+
+### Validation
+
+`openspec validate <change> --strict` checks that the artifacts are well-formed: requirements have scenarios, deltas reference real capabilities, and so on. Validation is structural; it does not prove the code works.
+
+### Archive
+
+When a change is done, `openspec archive <change>` merges its deltas into `openspec/specs/` and moves the change folder into `changes/archive/`. The specs now describe the new behavior, and the history is preserved.
+
+## Commands you will see
+
+| Command                             | What it does                                            |
+| ----------------------------------- | ------------------------------------------------------- |
+| `openspec list`                     | Lists active changes.                                   |
+| `openspec status --change <name>`   | Shows which artifacts exist and what is next.           |
+| `openspec validate <name> --strict` | Checks a change's structure.                            |
+| `openspec archive <name>`           | Applies a finished change to the specs and archives it. |
+
+OpenSpec also installs workflow commands/skills into coding agents (for example "propose", "apply", "archive") so an agent can follow the same steps.
+
+## How tie.md uses OpenSpec
+
+- **Each active change becomes a card** on the tie.md board. Its column is _derived_ from the artifacts, tasks, and validation results—see [Board and lifecycle](/docs/project-model).
+- **tie.md runs the installed CLI** (`list`, `status`, `validate`, `archive`) and shows the exact command and its raw output. tie.md v0.1.0 supports OpenSpec `>=1.16.0 <1.17.0`; outside that range, writes are blocked rather than guessed.
+- **Archive always asks first.** tie.md shows the exact `openspec archive` command and requires every gate to pass (or be visibly waived) and an explicit confirmation.
+- **Nothing proprietary is added to the OpenSpec folders** except an optional, small `.tie.yaml` assignment file inside a change folder, which travels with it into the archive.
+
+If you stop using tie.md, your `openspec/` folder is exactly as OpenSpec expects it.

@@ -1,0 +1,115 @@
+---
+title: Glossary
+sidebar_position: 7
+description: Short definitions of the spec-driven development, OpenSpec, agent, traceability, and tie.md terms used in this documentation.
+---
+
+# Glossary
+
+Terms marked **(tie.md)** are introduced by tie.md; the rest come from spec-driven development, OpenSpec, or coding-agent tools.
+
+**Adapter (tie.md)** — The connector between tie.md and one coding-agent CLI (Codex, Claude Code, GitHub Copilot CLI). Detects the CLI, builds its command, starts, streams, and stops it.
+
+**`AGENTS.md`** — A Markdown file of project-wide instructions that coding agents read. tie.md shows the nearest ones as _project instructions_ in each handoff.
+
+**Agent** — An AI coding tool that edits files and runs commands. In tie.md also short for a _roster agent definition_.
+
+**Agent definition (tie.md)** — A Markdown file describing one named role (Builder, Reviewer…). File name = ID, first heading = display name, body = instructions.
+
+**Allowed skills (tie.md)** — The skills an assigned agent may use for one change, listed in its `.tie.yaml`.
+
+**Archive** — OpenSpec's final step: merge a change's spec deltas into `openspec/specs/` and move the change folder to `changes/archive/`. tie.md requires gates and explicit confirmation.
+
+**Archive gate (tie.md)** — A condition that must pass (or be visibly waived) before archive: tasks done, validation current, required trace evidence present.
+
+**Artifact** — A file that is part of an OpenSpec change: `proposal.md`, `design.md`, spec deltas, `tasks.md`.
+
+**Assignment (tie.md)** — The primary agent, reviewers, and allowed skills for a change, stored in the change's `.tie.yaml`. Assigning starts nothing.
+
+**Baseline** — A named snapshot of agreed requirement scope used to detect later additions, changes, and removals.
+
+**Board (tie.md)** — The Studio view with one card per active change, in columns derived from evidence.
+
+**Capability** — In OpenSpec, a named area of behavior with its own `spec.md` (for example `user-export`).
+
+**Change** — In OpenSpec, a folder under `openspec/changes/` proposing new or modified behavior; the unit of work.
+
+**Change workspace (tie.md)** — The Studio page for one change, with tabs for Proposal, Design, Specifications, Tasks, Agent & skills, Validation, Trace, and Activity.
+
+**Conflict (tie.md)** — Either a file that changed on disk since you opened it (you choose reload, compare, or overwrite), or two configuration layers that disagree (shown with both origins).
+
+**Coverage (requirement)** — The share of in-scope requirements whose required tests currently pass or are waived. Different from code coverage.
+
+**Delivery** — A record that a release contains specific requirements, with a frozen copy of their evidence.
+
+**Delta** — The ADDED / MODIFIED / REMOVED requirements a change makes to a capability's spec.
+
+**Derived lifecycle (tie.md)** — Board columns (Draft, Ready, In progress, Review, Ready to archive) computed from artifacts, tasks, validation, and evidence—never set by hand.
+
+**Evidence (tie.md)** — Checkable facts tie.md relies on: file snapshots, command results, test results, confirmed trace links. Agent prose is not evidence.
+
+**Handoff (tie.md)** — Giving a change to an agent. Always starts with a **handoff preview** showing the exact instruction and command, and requires approval.
+
+**Impact analysis** — Following trace links from something that changed (for example a code file) to the requirements and tests it may affect.
+
+**Launch link (tie.md)** — The one-time local URL `tie serve` opens to sign your browser in to the local service.
+
+**Lifecycle terminology (tie.md)** — A display setting: native OpenSpec-style column names, SAFe-style names (Funnel → Done), or both.
+
+**Local service (tie.md)** — The process started by `tie serve`, listening only on `127.0.0.1`, that reads your workspace and serves the Studio.
+
+**Namespace (tie.md)** — The prefix given to a source in configuration; forms qualified IDs such as `team-agents:builder`.
+
+**OpenSpec** — The open-source spec-driven development framework and CLI that tie.md builds on.
+
+**Primary agent (tie.md)** — The roster agent responsible for implementing a change.
+
+**Project instructions** — Instructions inherited from `AGENTS.md` files, shown separately from the agent's own role.
+
+**Proposal** — `proposal.md`: why a change is needed and what it changes.
+
+**Qualified ID (tie.md)** — `namespace:id`, the unambiguous name of an agent or skill.
+
+**Requirement** — A statement of required behavior ("The system SHALL…") with one or more scenarios.
+
+**Roster (tie.md)** — All agent definitions resolved from configured agent sources.
+
+**RTM (requirements traceability matrix)** — The table linking requirements to design, tasks, code, tests, defects, and releases. tie.md stores it in `.tie/rtm.yaml`.
+
+**Run (tie.md)** — An approved handoff executing in your workspace; visible in the run dock and cancellable. One mutating run per workspace at a time.
+
+**Run dock (tie.md)** — The Studio panel streaming a run's live, redacted output with a Stop control.
+
+**Scenario** — A concrete WHEN/THEN example that makes a requirement testable.
+
+**Schema** — In OpenSpec, the definition of which artifacts a change needs (default `spec-driven`).
+
+**SDD (spec-driven development)** — Agreeing on a written specification of behavior before implementing it, and keeping it current.
+
+**Shared source (tie.md)** — An agent or skill source outside the workspace. Inspectable, but executable only after trust.
+
+**Skill** — A reusable folder with a `SKILL.md` that teaches an agent how to do something specific.
+
+**Source (tie.md)** — A configured folder of agent definitions or skills, with a namespace.
+
+**Spec** — In OpenSpec, `openspec/specs/<capability>/spec.md`: the current agreed behavior.
+
+**Stale evidence** — A recorded result that no longer proves the current version because something it depends on changed.
+
+**Studio (tie.md)** — The tie.md web interface opened by `tie serve`.
+
+**Suggested link** — A trace link proposed by a tool, Git, or an agent; never counts until a person confirms it.
+
+**Task** — A checklist line in `tasks.md`. Checked means "implemented", not "tested" or "delivered".
+
+**`.tie/` folder (tie.md)** — Workspace folder holding `config.yaml` and `rtm.yaml`.
+
+**`.tie.yaml` (tie.md)** — The assignment file inside a change folder.
+
+**Trust gate (tie.md)** — The rule that shared definitions cannot execute until their source is trusted, and that trust is suspended when their content changes.
+
+**Validation** — Running `openspec validate` to check a change's structure.
+
+**Waiver** — A recorded, attributable decision to accept a traceability gap, with rationale and optional expiry.
+
+**Workspace (tie.md)** — The project folder tie.md opens, normally a Git repository with an `openspec/` folder.

@@ -1,0 +1,84 @@
+---
+title: Configuration
+sidebar_position: 7
+description: Reference for tie.md's user and workspace configuration files, sources, namespaces, agent bindings, and preferences.
+---
+
+# Configuration
+
+tie.md reads two optional YAML files. Neither is required to open a workspace; without them tie.md shows what it detected and what is missing.
+
+| Layer     | Path                           | Typical content                                               |
+| --------- | ------------------------------ | ------------------------------------------------------------- |
+| User      | `~/.tie/config.yaml`           | Shared sources and personal defaults used in every workspace. |
+| Workspace | `<workspace>/.tie/config.yaml` | Project sources, agent bindings, preferences. Commit it.      |
+
+Values merge field by field; **the workspace wins**. The Studio's **Settings** page shows each effective value with the file it came from, and lists disagreements as conflicts. tie.md never rewrites either file to resolve a conflict.
+
+## Example
+
+```yaml
+version: 1 # required
+workspace:
+  root: .. # the project root, relative to this file
+  openspec: ../openspec # the OpenSpec folder
+sources:
+  - namespace: team-agents
+    kind: agents # a folder of agent Markdown files
+    path: ../agent-roster
+    executable: true
+  - namespace: team-skills
+    kind: skills # a folder of SKILL.md packages
+    path: ../skills
+    executable: true
+agents:
+  team-agents:builder:
+    adapter: codex # codex | claude | copilot
+    skills: [team-skills:testing]
+    tags: [implementation]
+    phases: [apply]
+preferences:
+  theme: system
+  terminology: native
+```
+
+## Fields
+
+### `workspace`
+
+Optional `root` and `openspec` paths. Relative paths resolve from the configuration file that declares them; absolute paths stay absolute. Without them, tie.md uses the folder you opened and its `openspec/` folder.
+
+### `sources`
+
+Required (use `sources: []` for none). Each source is a folder of agents or skills:
+
+- `namespace` – required; lowercase letters, digits, `.`, `_`, `-`. Becomes the prefix of every ID from that source (`team-agents:builder`).
+- `kind` – `agents`, `skills`, or `openspec`.
+- `path` – relative or absolute folder path.
+- `executable` – whether definitions from this source may be used for runs (shared sources additionally need [trust](#trust)).
+
+Missing or unreadable sources are reported without hiding healthy ones. If two sources contain the same local ID, always use the qualified ID.
+
+### `agents`
+
+Bindings for roster agents, keyed by qualified ID:
+
+- `adapter` – required: `codex`, `claude`, or `copilot`.
+- `skills` – required list (may be empty) of qualified skill IDs it uses.
+- `tags`, `phases` – optional labels describing the agent's role and when it is used (for example `apply`, `review`, `verify`).
+- `model` – optional model hint passed to the adapter.
+
+An unavailable adapter or skill is a visible blocker, not silently dropped.
+
+### `preferences`
+
+- `theme` – `system`, `light`, or `dark`.
+- `terminology` – board column labels: `native`, `safe`, or `both`.
+
+## Trust
+
+Sources **outside** the workspace can be browsed while untrusted, but cannot execute. Trusting a source binds to its canonical location and a fingerprint of its files; any change to those files suspends trust until you review it again. Trust decisions are personal and are stored in your user data, never in the workspace.
+
+## What is safe to delete
+
+tie.md keeps a local cache of derived data. You can stop tie.md and delete it at any time; it is rebuilt. **Do not** delete `.tie/config.yaml`, `.tie/rtm.yaml`, the `openspec/` folder, or a change's `.tie.yaml`—those are your project data.

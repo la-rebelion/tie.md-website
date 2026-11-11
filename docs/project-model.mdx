@@ -1,10 +1,12 @@
 ---
-title: Project and lifecycle model
+title: Board and lifecycle
 sidebar_position: 3
 description: How tie.md projects familiar board states from OpenSpec evidence.
 ---
 
-# Project and lifecycle model
+# Board and lifecycle
+
+New to OpenSpec changes? Read [OpenSpec](/docs/concepts/openspec) first.
 
 One card represents one OpenSpec change. The board is a view over existing artifacts and evidence—not a separate project database.
 
@@ -18,22 +20,27 @@ One card represents one OpenSpec change. The board is a view over existing artif
 | Review           | Implementation tasks are complete, but validation, traceability, verification, or human review remains. |
 | Ready to archive | Tasks, current checks, trace links, and required verification evidence pass.                            |
 
-Archived changes live in a separate searchable view.
+Archived changes live in a separate searchable **Archived** view.
+
+### Terminology
+
+**Settings → Lifecycle terminology** changes only the column labels:
+
+| Native           | SAFe-style   |
+| ---------------- | ------------ |
+| Draft            | Funnel       |
+| Ready            | Analyzing    |
+| In progress      | Implementing |
+| Review           | Validating   |
+| Ready to archive | Done         |
+
+Choose _native_, _SAFe-style_, or _both_. Files, paths, and OpenSpec commands are unaffected.
 
 Dragging a card cannot overwrite this truth. If a move implies an OpenSpec action, tie.md opens a confirmation or explains the missing evidence. If no valid transition exists, the card stays where it was.
 
 ## Change workspace
 
-Each change preserves stable navigation across:
-
-- overview and proposal;
-- design;
-- specifications;
-- tasks;
-- assigned agent and skills;
-- traceability;
-- validation;
-- activity.
+Each change has stable tabs: **Proposal, Design, Specifications, Tasks, Agent & skills, Validation, Trace,** and **Activity**. Tabs for artifacts the change does not have yet are not shown as if they existed.
 
 Missing artifacts remain visibly missing. Multiple specification files and nested capability directories are preserved rather than flattened into one generated document.
 

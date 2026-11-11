@@ -1,0 +1,61 @@
+---
+title: Coding agents and skills
+sidebar_position: 4
+description: What AI coding agents are, how AGENTS.md and SKILL.md guide them, and why tie.md supervises them instead of trusting their summaries.
+---
+
+# Coding agents and skills
+
+## Coding agents
+
+A **coding agent** is an AI program that can read your repository, edit files, and run commands to complete a task you describe. Popular command-line agents include **OpenAI Codex**, **Claude Code**, and **GitHub Copilot CLI**. You install and sign in to them yourself; they are separate products with their own accounts, models, and privacy terms.
+
+Agents are powerful and fast, but they:
+
+- only know what you (and your files) tell them;
+- can misunderstand intent, edit more than asked, or stop half-way;
+- often _summarize_ their work optimistically ("all tests pass") whether or not that is true.
+
+That is why tie.md treats an agent as a capable teammate that is **supervised**: you see what it will be told and which command will run, you approve it, you can stop it, and you judge the result from the real file changes and test results—not from its own report.
+
+## Project instructions: `AGENTS.md`
+
+`AGENTS.md` is a widely used convention: a Markdown file at the root of a repository (or a sub-folder) with instructions every agent should follow there—build commands, code style, things to avoid. Most agents read it automatically.
+
+tie.md shows the nearest `AGENTS.md` files as **project instructions** in every run preview, separately from the agent's own role.
+
+## Agent definitions (the roster)
+
+Beyond project-wide instructions, teams often want **named roles**: a _Builder_ that implements approved tasks, a _Reviewer_ that checks diffs against specs, a _Release_ agent that runs verification. In tie.md each role is a plain Markdown file:
+
+```md
+# Builder
+
+Implement only approved tasks. Report verification separately from implementation.
+```
+
+A folder of these files is a **roster**. The file name (`builder.md`) is the agent's ID; the first heading is its display name; the rest is its instruction text. tie.md configuration then binds each one to an actual CLI (for example `adapter: codex`).
+
+## Skills
+
+A **skill** is a reusable package of know-how an agent can load when relevant: a folder containing a `SKILL.md` file (with a name and description) plus optional references, scripts, or templates.
+
+```text
+skills/
+└── testing/
+    ├── SKILL.md               ← name, description, instructions
+    └── references/
+        └── checklist.md
+```
+
+Skills keep prompts short and consistent: instead of pasting "how we test" into every request, an agent is _allowed_ to use the `testing` skill. OpenSpec itself ships workflow skills (propose, apply, archive) for supported agents.
+
+## Why sharing needs trust
+
+Rosters and skills are often shared across repositories—a company-wide `qa` reviewer, a team `testing` skill. Shared files are convenient but are also instructions that will steer an agent with access to your code. tie.md therefore:
+
+- shows exactly where each definition comes from (workspace or shared, full path);
+- lets you _inspect_ shared definitions freely, but only _execute_ them after you trust that source;
+- suspends trust automatically if the shared files change, until you review them again.
+
+Continue with [the tie.md model](/docs/concepts/tie-md-model) for how agents, skills, and changes are tied together, or the [Agents and skills guide](/docs/agents-and-skills) for file formats.

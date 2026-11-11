@@ -1,0 +1,169 @@
+---
+title: The tie.md model
+sidebar_position: 6
+description: The concepts tie.md introduces—workspace, Studio, board, change workspace, configuration, sources, roster, assignment, handoff, run, evidence, trust—and how they fit together.
+---
+
+# The tie.md model
+
+tie.md adds a small number of concepts on top of [OpenSpec](/docs/concepts/openspec), Git, and your [coding agents](/docs/concepts/coding-agents-and-skills). This page introduces each one in the order you will meet it.
+
+```text
+ you
+  │  browser
+  ▼
+ Studio ── Changes · Traceability · Agents · Skills · Activity · Settings
+  │  local only (127.0.0.1)
+  ▼
+ tie serve ── runs openspec, git, and agent CLIs
+  │  reads and writes files
+  ▼
+ workspace/
+  ├── openspec/         specs and changes
+  ├── AGENTS.md         project instructions
+  ├── agent-roster/     agent definitions
+  ├── skills/           SKILL.md packages
+  ├── .tie/             tie.md config and traceability
+  └── src/ …            your code (in Git)
+```
+
+## Workspace
+
+A **workspace** is one project folder that tie.md opens—normally the root of a Git repository that contains an `openspec/` folder. Everything tie.md shows comes from that folder (plus any shared sources you explicitly configure).
+
+```bash
+tie serve ~/code/my-app      # or: cd ~/code/my-app && tie serve
+```
+
+On open, tie.md _detects_ the project—OpenSpec version and changes, Git state, configuration, agents, skills, and traceability data—without writing anything. Missing pieces are reported as missing, not silently created.
+
+## The `.tie/` folder
+
+tie.md keeps its own project data in a small folder at the workspace root, alongside your code:
+
+| File               | Holds                                                                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `.tie/config.yaml` | Workspace configuration: where OpenSpec lives, which agent/skill sources to use, agent bindings, preferences.                           |
+| `.tie/rtm.yaml`    | The [requirements traceability](/docs/concepts/requirements-traceability) data: nodes, confirmed links, baselines, waivers, deliveries. |
+
+Both are plain YAML meant to be committed and reviewed like code. A third kind of tie.md file, `.tie.yaml`, lives _inside_ each OpenSpec change folder (see [Assignment](#assignment)).
+
+## Local service and Studio
+
+`tie serve` starts a **local service** bound to `127.0.0.1` (port `4317` by default) and opens the **Studio**—the tie.md web interface—in your browser through a one-time launch link. No account, no cloud, and no other machine can connect.
+
+The Studio has a few main areas:
+
+| Area                    | Use it to                                                                                             |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Changes**             | See every active change on the board (or as a table), filter, and open one.                           |
+| **Traceability**        | Inspect the requirements matrix, gaps, impact, baselines, and waivers.                                |
+| **Agents** / **Skills** | Browse the roster and skill catalog, their sources, trust, and where they are used.                   |
+| **Activity**            | Follow recent work—Git history and uncommitted edits—and see what is new since your last visit.       |
+| **Archived**            | Search changes that OpenSpec has already archived.                                                    |
+| **Settings**            | Lifecycle terminology, workspace roots, effective configuration and its conflicts, sources and trust. |
+
+The Studio stays live: when you or an agent edit files outside tie.md, the views update.
+
+## Board and change cards
+
+Each active OpenSpec change is one **card** on the **board**. Columns are **derived from evidence**, not set by hand:
+
+**Draft → Ready → In progress → Review → Ready to archive**
+
+A card is in _Review_ because its tasks are complete but validation or verification is still open—not because someone dragged it there. Dragging a card either opens the real action (with confirmation) or explains which evidence is missing. Details in [Board and lifecycle](/docs/project-model).
+
+If your organization uses SAFe-style names, **Settings → Lifecycle terminology** can show _Funnel → Analyzing → Implementing → Validating → Done_ instead, or both. Only labels change; files and paths do not.
+
+## Change workspace
+
+Opening a card shows the **change workspace**: one place with tabs for that change's **Proposal, Design, Specifications, Tasks, Agent & skills** (its assignment), **Validation, Trace,** and **Activity**. You can read Markdown rendered, edit it as source, or use a split view; checking a task in the Studio edits `tasks.md` itself.
+
+## Configuration layers
+
+Configuration comes from two YAML files:
+
+- **User** – `~/.tie/config.yaml`: your personal defaults and shared sources, for every workspace.
+- **Workspace** – `.tie/config.yaml`: settings for this project, committed with it.
+
+They merge field by field and **the workspace wins**. The Studio shows where every effective value came from, and disagreements are shown as conflicts rather than silently resolved. See the [Configuration guide](/docs/configuration).
+
+## Sources, namespaces, and qualified IDs
+
+A **source** is a folder of agent definitions or skills, declared in configuration with a **namespace**:
+
+```yaml
+sources:
+  - namespace: team-agents
+    kind: agents
+    path: ../agent-roster
+```
+
+Every agent and skill gets a **qualified ID**, `namespace:id`—for example `team-agents:builder`. A source inside the workspace is _local_; one outside it (another repo, a company folder) is _shared_. Shared sources are referenced in place, never copied.
+
+## Roster and catalog
+
+The **roster** is the set of agent definitions tie.md resolved from all agent sources; the **skill catalog** is the same for skills. Each entry shows its source path, namespace, trust state, validity, the configuration that bound it (adapter, skills, phases), and which changes use it.
+
+## Adapter
+
+An **adapter** connects tie.md to one coding-agent CLI. v0.1.0 includes adapters for **Codex**, **Claude Code**, and **GitHub Copilot CLI**. The adapter detects whether the CLI is installed, builds its exact command, starts it, streams its output, and stops it. Sign-in, models, and billing stay with the CLI itself.
+
+## Assignment
+
+An **assignment** says who works on a change. It is stored in a small file inside the change folder, `openspec/changes/<change>/.tie.yaml`:
+
+```yaml
+version: 1
+primaryAgent: team-agents:builder
+reviewers: [team-agents:reviewer]
+allowedSkills: [team-skills:testing]
+revision: 01900000-0000-7000-8000-000000000000
+```
+
+- **Primary agent** – the roster agent that implements the change.
+- **Reviewers** – agents (or roles) expected to review it.
+- **Allowed skills** – the only skills the agent may use for this change.
+
+**Assigning starts nothing.** It is a plan, reviewable in Git. The file moves with the change when it is archived.
+
+## Handoff
+
+A **handoff** is the moment you give work to an agent. tie.md first shows a **handoff preview**: the agent, adapter, working directory, allowed skills, inherited `AGENTS.md` instructions, the full instruction text, the exact command, and which environment variables are passed (names only, never values). Nothing runs until you choose **Approve and start**. Cancelling the preview starts nothing.
+
+## Run
+
+An approved handoff becomes a **run**: the agent CLI working in your workspace. While it runs, the **run dock** streams its (redacted) output; you can stop it at any time, which ends the agent and its child processes. Only **one mutating run per workspace** is allowed at a time, so agents never edit over each other.
+
+## Evidence
+
+**Evidence** is what tie.md uses to decide what is true. It comes from things that can be checked—not from what an agent says:
+
+- **Changed files** – tie.md snapshots the workspace before and after a run and reports the real added, modified, deleted, and renamed files. Edits made by someone else during the run are flagged as uncertain.
+- **Validation** – the result of running `openspec validate`, with its exact command and output.
+- **Tests and trace links** – recorded in `.tie/rtm.yaml` and promoted by a person.
+
+An agent saying "all tests pass" changes nothing on its own. It can only _propose_ follow-ups you review.
+
+## Trust gate
+
+Definitions from **shared** sources can always be inspected, but cannot **execute** until you trust that source. Trust is bound to the source's location _and_ content: if its files change, trust is suspended until you review them again. Workspace-local sources are part of your repository and reviewed through Git.
+
+## Conflicts and authoritative files
+
+Your files are shared with editors, CLIs, and agents. When you save in the Studio, tie.md checks that the file has not changed since you opened it; if it has, you choose to reload, compare, or explicitly overwrite. Writes are atomic.
+
+tie.md also keeps a local cache to stay fast. It is **disposable**—derived from your files and rebuilt if deleted. The **authoritative** data is always the files: `openspec/`, `.tie/config.yaml`, `.tie/rtm.yaml`, and each change's `.tie.yaml`.
+
+## Putting it together
+
+A typical cycle:
+
+1. Open the **workspace** with `tie serve`; the **Studio** shows the **board**.
+2. Write or refine a change (proposal, specs, tasks) in the **change workspace**; **validate** it.
+3. **Assign** a roster agent and allowed skills.
+4. Review the **handoff preview** and approve a **run**; watch it in the run dock.
+5. Review the **evidence**—changed files, validation, traceability—and confirm trace links.
+6. When the card reaches **Ready to archive**, confirm the archive.
+
+All terms are also in the [Glossary](/docs/concepts/glossary).

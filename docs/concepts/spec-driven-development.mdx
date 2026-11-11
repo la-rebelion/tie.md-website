@@ -1,0 +1,51 @@
+---
+title: Spec-driven development
+sidebar_position: 2
+description: What spec-driven development (SDD) is, how it differs from writing code first, and why it matters when AI agents write code.
+---
+
+# Spec-driven development
+
+**Spec-driven development (SDD)** is a way of working where you agree on a written description of the behavior you want—the _specification_—before anyone (person or AI) changes the code. The specification is not throwaway paperwork: it stays in the repository and is updated whenever the behavior changes.
+
+## The problem it solves
+
+With code-first work, intent lives in people's heads, chat threads, and ticket comments. That breaks down when:
+
+- several people (or agents) work on the same system and need the same picture of "what it should do";
+- a reviewer has to decide whether a change is _correct_, not just whether it compiles;
+- months later, nobody remembers why something behaves the way it does.
+
+AI coding agents make this sharper. An agent will happily implement _something_ from a one-line prompt. Whether that something is what you meant depends on how precisely you said it. A specification is the precise version.
+
+## The basic loop
+
+```text
+  propose ──▶ specify ──▶ plan tasks ──▶ implement ──▶ verify ──▶ archive
+     ▲                                                              │
+     └──────────── specs updated, ready for the next change ◀───────┘
+```
+
+1. **Propose** – write down _why_ a change is needed and _what_ will change.
+2. **Specify** – describe the required behavior as requirements and concrete scenarios ("WHEN … THEN …").
+3. **Plan** – break the work into small, checkable tasks; record design decisions.
+4. **Implement** – a person or an agent works through the tasks.
+5. **Verify** – check the result against the specification, not against the implementer's summary.
+6. **Archive** – fold the agreed behavior into the long-lived specs so the next change starts from the truth.
+
+## What a good specification looks like
+
+- **Behavioral, not technical.** "The user can cancel a running export" rather than "add a `cancel()` method".
+- **Testable.** Each requirement has scenarios precise enough to become a test.
+- **Small and scoped.** One change describes one coherent piece of behavior.
+- **Living.** When behavior changes, the spec changes in the same pull request.
+
+## What SDD is not
+
+- Not "big design up front": specs are written per change and can be a page long.
+- Not a replacement for tests: specs say what must be true; tests prove that it is.
+- Not tied to one tool. Several frameworks implement the idea. tie.md is built around [OpenSpec](/docs/concepts/openspec).
+
+## Where tie.md helps
+
+SDD produces many small files across many changes. tie.md makes them _visible_: which changes are drafts, which are being implemented, which tasks remain, which requirements have passing tests, and what an agent is about to do. It does not change the method—your Markdown remains the source of truth. See [the tie.md model](/docs/concepts/tie-md-model).
