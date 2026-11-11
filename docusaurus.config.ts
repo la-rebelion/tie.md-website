@@ -2,11 +2,6 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import { themes as prismThemes } from "prism-react-renderer";
 
-// Hubspot account id
-const hubspot = {
-  accountId: "21339207",
-};
-
 const landingUrl =
   process.env.NODE_ENV === "development" ? "" : "https://tie.md";
 const landingSection = (section: string) => `${landingUrl}/#${section}`;
@@ -47,10 +42,6 @@ const config: Config = {
           onUntruncatedBlogPosts: "warn",
         },
         theme: { customCss: "./src/css/custom.css" },
-        gtag: {
-          trackingID: "GTM-MSVN7V57",
-          anonymizeIP: true,
-        },
         sitemap: {
           changefreq: "weekly",
           priority: 0.5,
@@ -60,26 +51,23 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-  scripts: [
-    {
-      src: "https://js.hsforms.net/forms/embed/v2.js",
-      async: true,
-    },
-  ],
+  // Analytics load only after consent: see src/lib/consent.ts and /privacy.
+  clientModules: ["./src/clientModules/analytics.ts"],
   headTags: [
     {
-      tagName: "script",
+      tagName: "link",
       attributes: {
-        async: "true",
-        defer: "true",
-        id: "hs-script-loader",
-        src: `//js.hs-scripts.com/${hubspot.accountId}.js`,
-        type: "text/javascript",
+        rel: "apple-touch-icon",
+        href: "/img/apple-touch-icon.png",
       },
+    },
+    {
+      tagName: "link",
+      attributes: { rel: "manifest", href: "/manifest.webmanifest" },
     },
   ],
   themeConfig: {
-    image: "img/tie-social-card.svg",
+    image: "img/tie-social-card.png",
     metadata: [
       {
         name: "description",
@@ -151,6 +139,7 @@ const config: Config = {
           items: [
             { label: "Documentation", to: "/docs" },
             { label: "Blog", to: "/blog" },
+            { label: "Privacy", to: "/privacy" },
           ],
         },
         {
@@ -169,6 +158,16 @@ const config: Config = {
     },
     prism: { theme: prismThemes.github, darkTheme: prismThemes.dracula },
   } satisfies Preset.ThemeConfig,
+  plugins: [
+    "docusaurus-plugin-copy-page-button",
+    [
+      "docusaurus-plugin-llms",
+      {
+        title: 'tie.md the SDD-first Documentation',
+        description: 'A local-first visual control plane for SDD-first projects',
+      },
+    ]
+  ],
 };
 
 export default config;

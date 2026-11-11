@@ -17,9 +17,17 @@ bun run start
 bun run format:check
 bun run typecheck
 bun run build
+bun run test    # installer script tests
+bun run audit   # Playwright audit of build/ (run after build)
 ```
 
 The production output is written to `build/`. Broken routes, anchors, and Markdown links fail the build.
+
+`bun run audit` serves `build/` and checks WCAG 2.2 AA (axe, light and dark), the no-JavaScript render, that no third-party request happens before analytics consent, 320px layouts, keyboard focus, reduced motion, metadata/icons/robots/sitemap, that the demo screens are labelled as examples, a performance budget, and visual baselines (`e2e/site.e2e.mts-snapshots/`; refresh with `bunx playwright test --config playwright.config.mts -g visual --update-snapshots=all`).
+
+## Privacy and analytics
+
+Google Tag Manager and HubSpot load only after a visitor accepts the consent banner (`src/lib/consent.ts`); the choice can be changed on `/privacy`. Fonts are self-hosted via Fontsource.
 
 ## Deploy to GitHub Pages
 

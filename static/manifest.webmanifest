@@ -1,0 +1,20 @@
+{
+  "name": "tie.md",
+  "short_name": "tie.md",
+  "description": "A local-first visual control plane for SDD-first projects.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#141a24",
+  "theme_color": "#141a24",
+  "icons": [
+    { "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "/img/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    { "src": "/img/tie-mark.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

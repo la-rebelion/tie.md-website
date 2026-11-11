@@ -42,16 +42,14 @@ $ tie serve
     title: "Assign an agent and its skills",
     body: "Choose a teammate and only the capabilities it may use. The assignment stays in a small, reviewable sidecar.",
     file: "openspec/changes/agent-run-attribution/.tie.yaml",
-    screen: `agent: workspace:builder          # agent-roster/builder.md
+    screen: `version: 1
+primaryAgent: "workspace:builder"   # agent-roster/builder.md
 reviewers:
-  - company:qa                    # shared · trusted
-skills:
-  - workspace:typescript
-  - shared:test-strategy          # referenced, never copied
-history:
-  - at: 2026-11-09
-    by: you
-    agent: workspace:builder`,
+  - "company:qa"                    # shared source · trusted
+allowedSkills:
+  - "workspace:typescript"
+  - "shared:test-strategy"          # referenced, never copied
+revision: 7f3c2a1                   # stale edits become a conflict`,
   },
   {
     title: "Approve, then watch it work",
@@ -414,6 +412,7 @@ function Terminal({ active }: { active: number }) {
         <i />
         <i />
         <span>{steps[active].file}</span>
+        <em className={styles.exampleTag}>Illustrative example</em>
       </div>
       <pre aria-live="polite" key={active}>
         {steps[active].screen}
@@ -495,15 +494,15 @@ export default function Home(): ReactNode {
               </p>
               <div className={styles.actions}>
                 <Link className={styles.primaryAction} to="/install">
-                  Install v0.1.0 <span aria-hidden="true">→</span>
+                  Install options <span aria-hidden="true">→</span>
                 </Link>
                 <Link className={styles.ghostAction} href={github}>
                   Follow development on GitHub
                 </Link>
               </div>
               <small>
-                Release candidate for Windows · macOS · Linux · no hosted
-                account required
+                v0.1.0 release candidate for Windows · macOS · Linux ·
+                installers go live with the tagged release · no hosted account
               </small>
             </div>
             <HarnessDiagram />

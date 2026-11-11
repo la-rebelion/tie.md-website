@@ -121,7 +121,8 @@
   border-radius: 10px;
   display: inline-flex;
   font:
-    700 15px/1 "Inter",
+    700 15px/1 "Inter Variable",
+    "Inter",
     sans-serif;
   gap: 9px;
   justify-content: center;
@@ -213,7 +214,8 @@
 .diagramOutputs text {
   fill: #eef2f6;
   font:
-    600 15px "Inter",
+    600 15px "Inter Variable",
+    "Inter",
     sans-serif;
 }
 
@@ -449,6 +451,18 @@
     monospace;
   margin-left: 8px;
 }
+.exampleTag {
+  border: 1px solid #3b4655;
+  border-radius: 999px;
+  color: #c4ced8;
+  font:
+    600 11px/1 "JetBrains Mono",
+    monospace;
+  font-style: normal;
+  margin-left: auto;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
 .terminal pre {
   animation: terminalIn 280ms ease-out;
   background: transparent;
@@ -503,7 +517,7 @@
   position: relative;
 }
 .featureCard > span {
-  color: #1193b0;
+  color: #0b6f86;
   font:
     600 12px/1 "JetBrains Mono",
     monospace;
@@ -517,10 +531,20 @@
   padding: 0;
 }
 .featureCard:nth-child(3n + 2) > span {
-  color: #da7756;
+  color: #a9502f;
 }
 .featureCard:nth-child(3n) > span {
-  color: #08aea6;
+  color: #06756e;
+}
+[data-theme="dark"] .eyebrow,
+[data-theme="dark"] .featureCard > span {
+  color: #4cc0da;
+}
+[data-theme="dark"] .featureCard:nth-child(3n + 2) > span {
+  color: #ff9b74;
+}
+[data-theme="dark"] .featureCard:nth-child(3n) > span {
+  color: #3fd0c6;
 }
 
 .audienceGrid article {

@@ -1,3 +1,4 @@
+/// <reference types="bun" />
 import { afterAll, describe, expect, test } from "bun:test";
 import { chmod, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";

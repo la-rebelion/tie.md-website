@@ -43,7 +43,7 @@
 
 .eyebrow,
 .step {
-  color: #1193b0;
+  color: #0b6f86;
   font-family: "JetBrains Mono", monospace;
   font-size: 12px;
   font-weight: 700;
@@ -67,6 +67,7 @@
 .content {
   display: grid;
   gap: 32px;
+  grid-template-columns: minmax(0, 1fr);
   padding-block: 40px 96px;
 }
 
@@ -83,6 +84,11 @@
 
 .candidate strong {
   white-space: nowrap;
+}
+
+[data-theme="dark"] .eyebrow,
+[data-theme="dark"] .step {
+  color: #4cc0da;
 }
 
 [data-theme="dark"] .candidate {
@@ -229,7 +235,11 @@
   .installGrid,
   .alternativeGrid,
   .integrity {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .candidate strong {
+    white-space: normal;
   }
 
   .candidate {

@@ -1,4 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+/* Self-hosted typefaces (OFL-1.1, via Fontsource): no third-party font requests. */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/jetbrains-mono/latin-400.css";
+@import "@fontsource/jetbrains-mono/latin-600.css";
 
 :root {
   --ifm-color-primary: #0b7189;
@@ -10,9 +13,11 @@
   --ifm-color-primary-lightest: #1193b0;
   --ifm-background-color: #ffffff;
   --ifm-background-surface-color: #f5f7f9;
-  --ifm-font-family-base: "Inter", system-ui, -apple-system, sans-serif;
+  --ifm-font-family-base:
+    "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
   --ifm-font-family-monospace: "JetBrains Mono", ui-monospace, Menlo, monospace;
-  --ifm-heading-font-family: "Inter", system-ui, -apple-system, sans-serif;
+  --ifm-heading-font-family:
+    "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
   --ifm-heading-font-weight: 800;
   --ifm-font-color-base: #14202b;
   --ifm-navbar-background-color: #141a24;
@@ -307,4 +312,102 @@ body {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* WCAG 1.4.1: links inside running text must not rely on color alone. */
+.markdown p a,
+.markdown li a,
+.markdown td a {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+/* Analytics consent: a non-modal region pinned to the bottom edge. */
+.tie-consent {
+  align-items: center;
+  background: var(--ifm-background-surface-color, #fff);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.18);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  left: 16px;
+  margin-inline: auto;
+  max-width: 760px;
+  padding: 14px 18px;
+  position: fixed;
+  right: 16px;
+  z-index: 300;
+}
+.tie-consent p {
+  flex: 1 1 320px;
+  font-size: 14px;
+  margin: 0;
+}
+.tie-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tie-consent-inline {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  margin-block: 16px 24px;
+  padding: 16px;
+}
+.tie-consent-inline p {
+  margin-bottom: 12px;
+}
+.tie-prose {
+  max-width: 760px;
+}
+.tie-consent a,
+.tie-prose a {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+/* The navbar is dark in both themes: keep the compact menu toggle at ≥3:1 (WCAG 1.4.11). */
+.navbar__toggle {
+  color: #e6edf3;
+}
+
+/* Prism comment tokens: the stock github/dracula colors fall below 4.5:1 (WCAG 1.4.3). */
+.prism-code .token.comment,
+.prism-code .token.prolog {
+  color: #57606a !important;
+}
+[data-theme="dark"] .prism-code .token.comment,
+[data-theme="dark"] .prism-code .token.prolog {
+  color: #a4add3 !important;
+}
+/* Light (github) theme: lift low-contrast tokens to ≥4.5:1 on the code background. */
+[data-theme="light"] .prism-code .token.atrule,
+[data-theme="light"] .prism-code .token.keyword,
+[data-theme="light"] .prism-code .token.attr-name,
+[data-theme="light"] .prism-code .token.selector {
+  color: #0550ae !important;
+}
+[data-theme="light"] .prism-code .token.entity,
+[data-theme="light"] .prism-code .token.url,
+[data-theme="light"] .prism-code .token.symbol,
+[data-theme="light"] .prism-code .token.number,
+[data-theme="light"] .prism-code .token.boolean,
+[data-theme="light"] .prism-code .token.variable,
+[data-theme="light"] .prism-code .token.constant,
+[data-theme="light"] .prism-code .token.property,
+[data-theme="light"] .prism-code .token.regex,
+[data-theme="light"] .prism-code .token.inserted {
+  color: #0a6e6b !important;
+}
+[data-theme="light"] .prism-code .token.string,
+[data-theme="light"] .prism-code .token.attr-value,
+[data-theme="light"] .prism-code .token.char {
+  color: #b3165e !important;
+}
+[data-theme="light"] .prism-code .token.deleted,
+[data-theme="light"] .prism-code .token.tag {
+  color: #cf222e !important;
 }
