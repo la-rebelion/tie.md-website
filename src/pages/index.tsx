@@ -1,7 +1,7 @@
 import Head from "@docusaurus/Head";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import styles from "./index.module.css";
 
 const github = "https://github.com/la-rebelion/tie.md";
@@ -422,38 +422,6 @@ function Terminal({ active }: { active: number }) {
   );
 }
 
-function CopyCommand({ dark = false }: { dark?: boolean }) {
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current);
-    },
-    [],
-  );
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText("tie serve");
-    } catch {
-      /* clipboard may be unavailable */
-    }
-    setCopied(true);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setCopied(false), 1600);
-  }
-  return (
-    <button
-      className={dark ? styles.commandButton : styles.commandButtonLight}
-      onClick={copy}
-      type="button"
-      aria-label="Copy the planned tie serve command"
-    >
-      <code>$ tie serve</code>
-      <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
-    </button>
-  );
-}
-
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
@@ -526,18 +494,16 @@ export default function Home(): ReactNode {
                 harness—local, file-based, and yours to untie.
               </p>
               <div className={styles.actions}>
-                <Link
-                  className={styles.primaryAction}
-                  to="/docs/getting-started"
-                >
-                  Explore the workflow <span aria-hidden="true">→</span>
+                <Link className={styles.primaryAction} to="/install">
+                  Install v0.1.0 <span aria-hidden="true">→</span>
                 </Link>
                 <Link className={styles.ghostAction} href={github}>
                   Follow development on GitHub
                 </Link>
               </div>
               <small>
-                Planned for Windows · macOS · Linux · no hosted account required
+                Release candidate for Windows · macOS · Linux · no hosted
+                account required
               </small>
             </div>
             <HarnessDiagram />
@@ -857,11 +823,13 @@ export default function Home(): ReactNode {
                 <Link className={styles.primaryAction} href={github}>
                   Watch the repository <span aria-hidden="true">→</span>
                 </Link>
-                <CopyCommand dark />
+                <Link className={styles.ghostAction} to="/install">
+                  Installation options
+                </Link>
               </div>
               <small>
-                <code>tie serve</code> is the planned local CLI entry point;
-                release availability will be announced on GitHub.
+                Installers remain release-candidate instructions until the
+                tagged artifacts are published.
               </small>
             </div>
           </div>

@@ -116,9 +116,7 @@
 }
 
 .primaryAction,
-.ghostAction,
-.commandButton,
-.commandButtonLight {
+.ghostAction {
   align-items: center;
   border-radius: 10px;
   display: inline-flex;
@@ -660,27 +658,6 @@
 .finalCard code {
   color: #c4ced8;
 }
-.commandButton,
-.commandButtonLight {
-  background: transparent;
-  border: 1px solid #3a4656;
-  color: #eef2f6;
-  cursor: pointer;
-}
-.commandButton code {
-  background: none;
-  border: 0;
-  color: #eef2f6;
-  padding: 0;
-}
-.commandButton span {
-  color: #9aa7b5;
-  font-size: 12px;
-}
-.commandButton:hover {
-  border-color: #4cc0da;
-}
-
 @keyframes flow {
   to {
     stroke-dashoffset: -64;

@@ -4,7 +4,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 
 // Hubspot account id
 const hubspot = {
-  accountId: '21339207',
+  accountId: "21339207",
 };
 
 const landingUrl =
@@ -48,7 +48,7 @@ const config: Config = {
         },
         theme: { customCss: "./src/css/custom.css" },
         gtag: {
-          trackingID: 'GTM-MSVN7V57',
+          trackingID: "GTM-MSVN7V57",
           anonymizeIP: true,
         },
         sitemap: {
@@ -62,7 +62,7 @@ const config: Config = {
   ],
   scripts: [
     {
-      src: 'https://js.hsforms.net/forms/embed/v2.js',
+      src: "https://js.hsforms.net/forms/embed/v2.js",
       async: true,
     },
   ],
@@ -112,6 +112,7 @@ const config: Config = {
           label: "Features",
           position: "left",
         },
+        { to: "/install", label: "Install", position: "left" },
         {
           href: landingSection("vision"),
           label: "Vision",
@@ -139,6 +140,7 @@ const config: Config = {
         {
           title: "Product",
           items: [
+            { label: "Install", to: "/install" },
             { label: "How it works", href: landingSection("how") },
             { label: "Principles", href: landingSection("principles") },
             { label: "Vision", href: landingSection("vision") },

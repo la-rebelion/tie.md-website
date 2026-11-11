@@ -1,19 +1,38 @@
 ---
 title: Getting started
 sidebar_position: 2
-description: The planned tie.md MVP onboarding and supervised workflow.
+description: Install tie.md v0.1.0 and open a local OpenSpec workspace.
 ---
 
 # Getting started
 
-The planned CLI entry point is:
+## Install the release candidate
+
+The public installers select the correct compiled binary and verify it against the release's
+SHA-256 checksums:
+
+```bash
+curl -fsSL https://tie.md/install.sh | sh
+```
+
+```powershell
+irm https://tie.md/install.ps1 | iex
+```
+
+Review the scripts, supported platforms, npm option, and manual verification path on the
+[installation page](/install). These commands become downloadable when v0.1.0 is published.
+
+## Open a workspace
+
+Run the CLI from an OpenSpec project or pass its path explicitly:
 
 ```bash
 cd /path/to/an/openspec-project
 tie serve
 ```
 
-This command is part of the MVP contract, not a claim that a public package is already available. Check [GitHub](https://github.com/la-rebelion/tie.md) for release artifacts and current installation instructions.
+Until the tagged release is available, check [GitHub](https://github.com/la-rebelion/tie.md) for
+release status and build evidence.
 
 ## What tie.md detects
 
