@@ -1,0 +1,22 @@
+# tie.md the SDD-first Documentation
+
+> A local-first visual control plane for SDD-first projects
+
+This file contains links to documentation sections following the llmstxt.org standard.
+
+## Table of Contents
+
+- [Agents and skills](https://tie.md/docs/agents-and-skills): How tie.md resolves reusable agents, skills, assignments, and trust.
+- [Coding agents and skills](https://tie.md/docs/concepts/coding-agents-and-skills): What AI coding agents are, how AGENTS.md and SKILL.md guide them, and why tie.md supervises them instead of trusting their summaries.
+- [Glossary](https://tie.md/docs/concepts/glossary): Short definitions of the spec-driven development, OpenSpec, agent, traceability, and tie.md terms used in this documentation.
+- [Concepts](https://tie.md/docs/concepts): The ideas behind tie.md—spec-driven development, OpenSpec, coding agents, traceability—and the vocabulary tie.md adds on top.
+- [OpenSpec](https://tie.md/docs/concepts/openspec): A practical primer on OpenSpec—specs, changes, artifacts, deltas, validation, and archive—and how tie.md uses it.
+- [Requirements traceability](https://tie.md/docs/concepts/requirements-traceability): What a requirements traceability matrix (RTM) is, why "tested" and "delivered" need evidence, and how this differs from code coverage.
+- [Spec-driven development](https://tie.md/docs/concepts/spec-driven-development): What spec-driven development (SDD) is, how it differs from writing code first, and why it matters when AI agents write code.
+- [The tie.md model](https://tie.md/docs/concepts/tie-md-model): The concepts tie.md introduces—workspace, Studio, board, change workspace, configuration, sources, roster, assignment, handoff, run, evidence, trus...
+- [Configuration](https://tie.md/docs/configuration): Reference for tie.md's user and workspace configuration files, sources, namespaces, agent bindings, and preferences.
+- [Getting started](https://tie.md/docs/getting-started): Install tie.md v0.1.0, open your first OpenSpec workspace, and take a guided first tour of the Studio.
+- [tie.md documentation](https://tie.md/docs): Understand what tie.md is, who it is for, and where to start—whether or not you already use spec-driven development and OpenSpec.
+- [Board and lifecycle](https://tie.md/docs/project-model): How tie.md projects familiar board states from OpenSpec evidence.
+- [Safety and local-first operation](https://tie.md/docs/safety-and-local-first): The tie.md execution, filesystem, network, privacy, and approval boundaries.
+- [Requirements traceability](https://tie.md/docs/traceability): Understand tie.md requirement IDs, trace links, evidence states, gaps, and baselines.

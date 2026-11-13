@@ -1,0 +1,1000 @@
+# tie.md the SDD-first Documentation
+
+> A local-first visual control plane for SDD-first projects
+
+This file contains all documentation content in a single document following the llmstxt.org standard.
+
+## Agents and skills
+
+tie.md treats agents and skills as reusable project assets, not hidden dropdown values. For the background, see [Coding agents and skills](/docs/concepts/coding-agents-and-skills).
+
+### Agent definitions
+
+An MVP agent definition is plain Markdown aligned with `AGENTS.md` conventions:
+
+- the filename provides the local identifier;
+- the first heading provides the display name;
+- the rest of the file is the agent's instruction text;
+- configuration supplies adapter and execution bindings;
+- no proprietary frontmatter is required.
+
+```md title="agent-roster/builder.md"
+# Builder
+
+Implement only approved tasks and report verification separately.
+```
+
+Bind it to a coding-agent CLI in [configuration](/docs/configuration):
+
+```yaml title=".tie/config.yaml"
+agents:
+  team-agents:builder:
+    adapter: codex # codex | claude | copilot
+    skills: [team-skills:testing]
+    phases: [apply]
+```
+
+### Skill packages
+
+Skills use the existing directory-plus-`SKILL.md` convention. A workspace can resolve them from its own `skills/` directory or from approved shared sources without copying them into the repository.
+
+```md title="skills/testing/SKILL.md"
+---
+name: testing
+description: Verify approved behavior with deterministic evidence.
+---
+
+Read [the checklist](references/checklist.md) before testing.
+```
+
+Referenced files must stay inside the skill's folder; a missing resource or a path that escapes the package makes the skill invalid for execution.
+
+### Precedence and identity
+
+Workspace configuration takes precedence over user configuration. Duplicate unqualified IDs are errors, not silent overrides. The interface displays:
+
+- a qualified ID such as `workspace:builder` or `company:qa`;
+- the canonical resolved path;
+- workspace or shared provenance;
+- current content identity;
+- trust and conflict diagnostics.
+
+### Assignment sidecar
+
+Change-local assignment metadata lives beside the OpenSpec change:
+
+```yaml title="openspec/changes/add-export-cancel/.tie.yaml"
+version: 1
+primaryAgent: team-agents:builder
+reviewers: [company:qa]
+allowedSkills: [team-skills:typescript, shared:test-strategy]
+revision: 01900000-0000-7000-8000-000000000000
+```
+
+`revision` lets tie.md detect that someone else changed the file since you opened it. The sidecar moves with the change when OpenSpec archives it.
+
+The sidecar ties a specific change to a specific roster agent and set of allowed skills. It does not copy the definitions or grant an agent unrestricted access, and **assigning starts nothing**: a run needs a separate handoff preview and your approval.
+
+### Supported coding agents
+
+| Adapter   | CLI invoked                                        | Notes              |
+| --------- | -------------------------------------------------- | ------------------ |
+| `codex`   | `codex exec <instruction>`                         | OpenAI Codex CLI   |
+| `claude`  | `claude --print <instruction>`                     | Claude Code        |
+| `copilot` | `copilot --prompt <instruction> --allow-all-tools` | GitHub Copilot CLI |
+
+Install and sign in to each CLI yourself; tie.md never handles provider credentials. If a CLI is missing, its agents show as unavailable with the reason.
+
+### Trust gate
+
+Definitions outside the workspace remain inspect-only until the user approves their canonical source identity. If that identity changes later, execution is blocked until trust is reviewed again. Secrets and volatile directories are excluded from skill resource access.
+
+---
+
+## Coding agents and skills
+
+### Coding agents
+
+A **coding agent** is an AI program that can read your repository, edit files, and run commands to complete a task you describe. Popular command-line agents include **OpenAI Codex**, **Claude Code**, and **GitHub Copilot CLI**. You install and sign in to them yourself; they are separate products with their own accounts, models, and privacy terms.
+
+Agents are powerful and fast, but they:
+
+- only know what you (and your files) tell them;
+- can misunderstand intent, edit more than asked, or stop half-way;
+- often _summarize_ their work optimistically ("all tests pass") whether or not that is true.
+
+That is why tie.md treats an agent as a capable teammate that is **supervised**: you see what it will be told and which command will run, you approve it, you can stop it, and you judge the result from the real file changes and test results—not from its own report.
+
+### Project instructions: `AGENTS.md`
+
+`AGENTS.md` is a widely used convention: a Markdown file at the root of a repository (or a sub-folder) with instructions every agent should follow there—build commands, code style, things to avoid. Most agents read it automatically.
+
+tie.md shows the nearest `AGENTS.md` files as **project instructions** in every run preview, separately from the agent's own role.
+
+### Agent definitions (the roster)
+
+Beyond project-wide instructions, teams often want **named roles**: a _Builder_ that implements approved tasks, a _Reviewer_ that checks diffs against specs, a _Release_ agent that runs verification. In tie.md each role is a plain Markdown file:
+
+```md
+# Builder
+
+Implement only approved tasks. Report verification separately from implementation.
+```
+
+A folder of these files is a **roster**. The file name (`builder.md`) is the agent's ID; the first heading is its display name; the rest is its instruction text. tie.md configuration then binds each one to an actual CLI (for example `adapter: codex`).
+
+### Skills
+
+A **skill** is a reusable package of know-how an agent can load when relevant: a folder containing a `SKILL.md` file (with a name and description) plus optional references, scripts, or templates.
+
+```text
+skills/
+└── testing/
+    ├── SKILL.md               ← name, description, instructions
+    └── references/
+        └── checklist.md
+```
+
+Skills keep prompts short and consistent: instead of pasting "how we test" into every request, an agent is _allowed_ to use the `testing` skill. OpenSpec itself ships workflow skills (propose, apply, archive) for supported agents.
+
+### Why sharing needs trust
+
+Rosters and skills are often shared across repositories—a company-wide `qa` reviewer, a team `testing` skill. Shared files are convenient but are also instructions that will steer an agent with access to your code. tie.md therefore:
+
+- shows exactly where each definition comes from (workspace or shared, full path);
+- lets you _inspect_ shared definitions freely, but only _execute_ them after you trust that source;
+- suspends trust automatically if the shared files change, until you review them again.
+
+Continue with [the tie.md model](/docs/concepts/tie-md-model) for how agents, skills, and changes are tied together, or the [Agents and skills guide](/docs/agents-and-skills) for file formats.
+
+---
+
+## Glossary
+
+Terms marked **(tie.md)** are introduced by tie.md; the rest come from spec-driven development, OpenSpec, or coding-agent tools.
+
+**Adapter (tie.md)** — The connector between tie.md and one coding-agent CLI (Codex, Claude Code, GitHub Copilot CLI). Detects the CLI, builds its command, starts, streams, and stops it.
+
+**`AGENTS.md`** — A Markdown file of project-wide instructions that coding agents read. tie.md shows the nearest ones as _project instructions_ in each handoff.
+
+**Agent** — An AI coding tool that edits files and runs commands. In tie.md also short for a _roster agent definition_.
+
+**Agent definition (tie.md)** — A Markdown file describing one named role (Builder, Reviewer…). File name = ID, first heading = display name, body = instructions.
+
+**Allowed skills (tie.md)** — The skills an assigned agent may use for one change, listed in its `.tie.yaml`.
+
+**Archive** — OpenSpec's final step: merge a change's spec deltas into `openspec/specs/` and move the change folder to `changes/archive/`. tie.md requires gates and explicit confirmation.
+
+**Archive gate (tie.md)** — A condition that must pass (or be visibly waived) before archive: tasks done, validation current, required trace evidence present.
+
+**Artifact** — A file that is part of an OpenSpec change: `proposal.md`, `design.md`, spec deltas, `tasks.md`.
+
+**Assignment (tie.md)** — The primary agent, reviewers, and allowed skills for a change, stored in the change's `.tie.yaml`. Assigning starts nothing.
+
+**Baseline** — A named snapshot of agreed requirement scope used to detect later additions, changes, and removals.
+
+**Board (tie.md)** — The Studio view with one card per active change, in columns derived from evidence.
+
+**Capability** — In OpenSpec, a named area of behavior with its own `spec.md` (for example `user-export`).
+
+**Change** — In OpenSpec, a folder under `openspec/changes/` proposing new or modified behavior; the unit of work.
+
+**Change workspace (tie.md)** — The Studio page for one change, with tabs for Proposal, Design, Specifications, Tasks, Agent & skills, Validation, Trace, and Activity.
+
+**Conflict (tie.md)** — Either a file that changed on disk since you opened it (you choose reload, compare, or overwrite), or two configuration layers that disagree (shown with both origins).
+
+**Coverage (requirement)** — The share of in-scope requirements whose required tests currently pass or are waived. Different from code coverage.
+
+**Delivery** — A record that a release contains specific requirements, with a frozen copy of their evidence.
+
+**Delta** — The ADDED / MODIFIED / REMOVED requirements a change makes to a capability's spec.
+
+**Derived lifecycle (tie.md)** — Board columns (Draft, Ready, In progress, Review, Ready to archive) computed from artifacts, tasks, validation, and evidence—never set by hand.
+
+**Evidence (tie.md)** — Checkable facts tie.md relies on: file snapshots, command results, test results, confirmed trace links. Agent prose is not evidence.
+
+**Handoff (tie.md)** — Giving a change to an agent. Always starts with a **handoff preview** showing the exact instruction and command, and requires approval.
+
+**Impact analysis** — Following trace links from something that changed (for example a code file) to the requirements and tests it may affect.
+
+**Launch link (tie.md)** — The one-time local URL `tie serve` opens to sign your browser in to the local service.
+
+**Lifecycle terminology (tie.md)** — A display setting: native OpenSpec-style column names, SAFe-style names (Funnel → Done), or both.
+
+**Local service (tie.md)** — The process started by `tie serve`, listening only on `127.0.0.1`, that reads your workspace and serves the Studio.
+
+**Namespace (tie.md)** — The prefix given to a source in configuration; forms qualified IDs such as `team-agents:builder`.
+
+**OpenSpec** — The open-source spec-driven development framework and CLI that tie.md builds on.
+
+**Primary agent (tie.md)** — The roster agent responsible for implementing a change.
+
+**Project instructions** — Instructions inherited from `AGENTS.md` files, shown separately from the agent's own role.
+
+**Proposal** — `proposal.md`: why a change is needed and what it changes.
+
+**Qualified ID (tie.md)** — `namespace:id`, the unambiguous name of an agent or skill.
+
+**Requirement** — A statement of required behavior ("The system SHALL…") with one or more scenarios.
+
+**Roster (tie.md)** — All agent definitions resolved from configured agent sources.
+
+**RTM (requirements traceability matrix)** — The table linking requirements to design, tasks, code, tests, defects, and releases. tie.md stores it in `.tie/rtm.yaml`.
+
+**Run (tie.md)** — An approved handoff executing in your workspace; visible in the run dock and cancellable. One mutating run per workspace at a time.
+
+**Run dock (tie.md)** — The Studio panel streaming a run's live, redacted output with a Stop control.
+
+**Scenario** — A concrete WHEN/THEN example that makes a requirement testable.
+
+**Schema** — In OpenSpec, the definition of which artifacts a change needs (default `spec-driven`).
+
+**SDD (spec-driven development)** — Agreeing on a written specification of behavior before implementing it, and keeping it current.
+
+**Shared source (tie.md)** — An agent or skill source outside the workspace. Inspectable, but executable only after trust.
+
+**Skill** — A reusable folder with a `SKILL.md` that teaches an agent how to do something specific.
+
+**Source (tie.md)** — A configured folder of agent definitions or skills, with a namespace.
+
+**Spec** — In OpenSpec, `openspec/specs/<capability>/spec.md`: the current agreed behavior.
+
+**Stale evidence** — A recorded result that no longer proves the current version because something it depends on changed.
+
+**Studio (tie.md)** — The tie.md web interface opened by `tie serve`.
+
+**Suggested link** — A trace link proposed by a tool, Git, or an agent; never counts until a person confirms it.
+
+**Task** — A checklist line in `tasks.md`. Checked means "implemented", not "tested" or "delivered".
+
+**`.tie/` folder (tie.md)** — Workspace folder holding `config.yaml` and `rtm.yaml`.
+
+**`.tie.yaml` (tie.md)** — The assignment file inside a change folder.
+
+**Trust gate (tie.md)** — The rule that shared definitions cannot execute until their source is trusted, and that trust is suspended when their content changes.
+
+**Validation** — Running `openspec validate` to check a change's structure.
+
+**Waiver** — A recorded, attributable decision to accept a traceability gap, with rationale and optional expiry.
+
+**Workspace (tie.md)** — The project folder tie.md opens, normally a Git repository with an `openspec/` folder.
+
+---
+
+## Concepts
+
+tie.md sits on top of practices and tools you may or may not already use. This section explains them in plain terms, then shows exactly what tie.md adds.
+
+Read in order if you are new; jump around if you are not.
+
+### The general ideas
+
+These exist independently of tie.md. If you already work this way, skim them for the vocabulary.
+
+| Page                                                                  | You will learn                                                                                            | Skip if you already know…                       |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [Spec-driven development](/docs/concepts/spec-driven-development)     | Why teams write the specification before the code, and why it matters more with AI agents.                | SDD, "specs as source of truth"                 |
+| [OpenSpec](/docs/concepts/openspec)                                   | The open-source SDD framework tie.md is built for: specs, changes, proposals, tasks, validation, archive. | the `openspec/` folder and its CLI              |
+| [Coding agents and skills](/docs/concepts/coding-agents-and-skills)   | What AI coding agents are, what `AGENTS.md` and `SKILL.md` do, and why supervision matters.               | Codex / Claude Code / Copilot CLI, agent skills |
+| [Requirements traceability](/docs/concepts/requirements-traceability) | How a requirement is linked to the design, code, tests, and release that prove it.                        | RTMs, coverage vs. code coverage                |
+
+### How tie.md fits
+
+| Page                                            | You will learn                                                                                                          |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [The tie.md model](/docs/concepts/tie-md-model) | Workspace, Studio, board, change workspace, sources, roster, assignment, handoff, run, evidence, trust—how they relate. |
+| [Glossary](/docs/concepts/glossary)             | One-line definitions of every term used in these docs.                                                                  |
+
+### The one-paragraph version
+
+You describe **what** should change in plain Markdown files (a _spec-driven_ workflow). **OpenSpec** gives those files a standard shape and a CLI that validates and archives them. A **coding agent** then does the implementation, guided by reusable **skills**. **tie.md** is a local app that reads all of that from your repository and shows it as one board you can supervise: who is assigned, what the agent is about to run, which files it actually changed, and which requirements have real evidence behind them. Everything stays in your files and your Git history.
+
+---
+
+## OpenSpec
+
+[OpenSpec](https://github.com/Fission-AI/OpenSpec) is an open-source framework and command-line tool for [spec-driven development](/docs/concepts/spec-driven-development). It defines where specifications live in your repository, what a proposed change looks like, and how changes are validated and merged into the specs.
+
+tie.md is a visual layer for OpenSpec projects. **OpenSpec stays in charge**: tie.md reads its files, runs its CLI, and never invents its own lifecycle state.
+
+### The folder
+
+```text
+openspec/
+├── specs/                         ← the current, agreed behavior ("source of truth")
+│   └── user-export/
+│       └── spec.md
+└── changes/                       ← proposed modifications, one folder each
+    ├── add-export-cancel/
+    │   ├── proposal.md            ← why, and what changes
+    │   ├── design.md              ← technical decisions (optional for small changes)
+    │   ├── tasks.md               ← checklist of implementation steps
+    │   └── specs/
+    │       └── user-export/
+    │           └── spec.md        ← the *delta* this change makes to the spec
+    └── archive/                   ← completed changes, kept for history
+```
+
+### Key ideas
+
+#### Specs
+
+A **spec** describes one capability (for example `user-export`) as a list of **requirements**, each with one or more **scenarios**:
+
+```md
+### Requirement: Cancel a running export
+
+The system SHALL let the user cancel an export that is in progress.
+
+#### Scenario: User cancels
+
+- **WHEN** the user selects Cancel while an export is running
+- **THEN** the export stops and no partial file is kept
+```
+
+#### Changes
+
+A **change** is a folder under `openspec/changes/` that proposes new or modified behavior. It is the unit of work: one change ≈ one feature, fix, or refactor. Its files are called **artifacts**:
+
+| Artifact           | Purpose                                                                  |
+| ------------------ | ------------------------------------------------------------------------ |
+| `proposal.md`      | Why the change is needed, what changes, which capabilities are affected. |
+| `design.md`        | How it will be built: decisions, trade-offs, risks.                      |
+| `specs/**/spec.md` | **Deltas**—requirements this change ADDS, MODIFIES, or REMOVES.          |
+| `tasks.md`         | A Markdown checklist (`- [ ]` / `- [x]`) of implementation steps.        |
+
+The exact artifact set is defined by a **schema** (the default is `spec-driven`).
+
+#### Validation
+
+`openspec validate <change> --strict` checks that the artifacts are well-formed: requirements have scenarios, deltas reference real capabilities, and so on. Validation is structural; it does not prove the code works.
+
+#### Archive
+
+When a change is done, `openspec archive <change>` merges its deltas into `openspec/specs/` and moves the change folder into `changes/archive/`. The specs now describe the new behavior, and the history is preserved.
+
+### Commands you will see
+
+| Command                             | What it does                                            |
+| ----------------------------------- | ------------------------------------------------------- |
+| `openspec list`                     | Lists active changes.                                   |
+| `openspec status --change <name>`   | Shows which artifacts exist and what is next.           |
+| `openspec validate <name> --strict` | Checks a change's structure.                            |
+| `openspec archive <name>`           | Applies a finished change to the specs and archives it. |
+
+OpenSpec also installs workflow commands/skills into coding agents (for example "propose", "apply", "archive") so an agent can follow the same steps.
+
+### How tie.md uses OpenSpec
+
+- **Each active change becomes a card** on the tie.md board. Its column is _derived_ from the artifacts, tasks, and validation results—see [Board and lifecycle](/docs/project-model).
+- **tie.md runs the installed CLI** (`list`, `status`, `validate`, `archive`) and shows the exact command and its raw output. tie.md v0.1.0 supports OpenSpec `>=1.16.0 <1.17.0`; outside that range, writes are blocked rather than guessed.
+- **Archive always asks first.** tie.md shows the exact `openspec archive` command and requires every gate to pass (or be visibly waived) and an explicit confirmation.
+- **Nothing proprietary is added to the OpenSpec folders** except an optional, small `.tie.yaml` assignment file inside a change folder, which travels with it into the archive.
+
+If you stop using tie.md, your `openspec/` folder is exactly as OpenSpec expects it.
+
+---
+
+## Requirements traceability
+
+**Requirements traceability** means being able to follow each requirement to everything that implements and proves it—and back again. The classic tool is a **requirements traceability matrix (RTM)**: a table with one row per requirement and columns for its design, tasks, code, tests, defects, and release.
+
+### Why it matters
+
+Traceability answers questions every project eventually asks:
+
+- _Is every requirement actually tested?_ (forward: requirement → tests)
+- _Why does this code exist?_ (backward: code → requirement)
+- _If I change this file, what could break?_ (impact analysis)
+- _What exactly did release 1.2 deliver?_ (release evidence)
+- _What work slipped in that nobody asked for?_ (scope creep)
+
+It is common in regulated domains, but it is just as useful when AI agents produce large amounts of code quickly and you need to know what is really done.
+
+### Links and evidence
+
+An RTM is built from **links** between **nodes**:
+
+```text
+requirement → design → task → code → test → defect / change request → release
+```
+
+A link is only as good as its evidence. Three distinctions matter:
+
+- **Done ≠ tested ≠ passed ≠ delivered.** A checked task means someone says it is implemented. _Tested_ means a test exists. _Passed_ means current test results pass. _Delivered_ means a release contains it.
+- **Evidence goes stale.** If a requirement or its code changes after a test passed, that pass no longer proves the current version.
+- **Suggestions are not facts.** Tools (including AI) can _suggest_ links; a person confirms them.
+
+### Requirement coverage vs. code coverage
+
+_Code coverage_ measures how many lines of code tests execute. _Requirement coverage_ measures how many agreed requirements have passing tests that verify them. You can have 95 % code coverage and still have untested requirements—or the reverse. They answer different questions; an RTM tracks the second.
+
+### Baselines and waivers
+
+- A **baseline** is a named snapshot of the agreed requirement scope. Comparing against it shows what was added, changed, or removed since.
+- A **waiver** is an explicit, recorded decision to accept a gap (for example, "manual test only for v0.1"), with a rationale, author, and optional expiry—so gaps are visible rather than forgotten.
+
+### In tie.md
+
+tie.md keeps its RTM in a plain file, `.tie/rtm.yaml`, generated from your OpenSpec requirements and scenarios and extended with confirmed links, baselines, waivers, and deliveries. The **Traceability** view shows the matrix, gaps, and impact; archive and release gates use the same data. See the [Traceability guide](/docs/traceability).
+
+---
+
+## Spec-driven development
+
+**Spec-driven development (SDD)** is a way of working where you agree on a written description of the behavior you want—the _specification_—before anyone (person or AI) changes the code. The specification is not throwaway paperwork: it stays in the repository and is updated whenever the behavior changes.
+
+### The problem it solves
+
+With code-first work, intent lives in people's heads, chat threads, and ticket comments. That breaks down when:
+
+- several people (or agents) work on the same system and need the same picture of "what it should do";
+- a reviewer has to decide whether a change is _correct_, not just whether it compiles;
+- months later, nobody remembers why something behaves the way it does.
+
+AI coding agents make this sharper. An agent will happily implement _something_ from a one-line prompt. Whether that something is what you meant depends on how precisely you said it. A specification is the precise version.
+
+### The basic loop
+
+```text
+  propose ──▶ specify ──▶ plan tasks ──▶ implement ──▶ verify ──▶ archive
+     ▲                                                              │
+     └──────────── specs updated, ready for the next change ◀───────┘
+```
+
+1. **Propose** – write down _why_ a change is needed and _what_ will change.
+2. **Specify** – describe the required behavior as requirements and concrete scenarios ("WHEN … THEN …").
+3. **Plan** – break the work into small, checkable tasks; record design decisions.
+4. **Implement** – a person or an agent works through the tasks.
+5. **Verify** – check the result against the specification, not against the implementer's summary.
+6. **Archive** – fold the agreed behavior into the long-lived specs so the next change starts from the truth.
+
+### What a good specification looks like
+
+- **Behavioral, not technical.** "The user can cancel a running export" rather than "add a `cancel()` method".
+- **Testable.** Each requirement has scenarios precise enough to become a test.
+- **Small and scoped.** One change describes one coherent piece of behavior.
+- **Living.** When behavior changes, the spec changes in the same pull request.
+
+### What SDD is not
+
+- Not "big design up front": specs are written per change and can be a page long.
+- Not a replacement for tests: specs say what must be true; tests prove that it is.
+- Not tied to one tool. Several frameworks implement the idea. tie.md is built around [OpenSpec](/docs/concepts/openspec).
+
+### Where tie.md helps
+
+SDD produces many small files across many changes. tie.md makes them _visible_: which changes are drafts, which are being implemented, which tasks remain, which requirements have passing tests, and what an agent is about to do. It does not change the method—your Markdown remains the source of truth. See [the tie.md model](/docs/concepts/tie-md-model).
+
+---
+
+## The tie.md model
+
+tie.md adds a small number of concepts on top of [OpenSpec](/docs/concepts/openspec), Git, and your [coding agents](/docs/concepts/coding-agents-and-skills). This page introduces each one in the order you will meet it.
+
+```text
+ you
+  │  browser
+  ▼
+ Studio ── Changes · Traceability · Agents · Skills · Activity · Settings
+  │  local only (127.0.0.1)
+  ▼
+ tie serve ── runs openspec, git, and agent CLIs
+  │  reads and writes files
+  ▼
+ workspace/
+  ├── openspec/         specs and changes
+  ├── AGENTS.md         project instructions
+  ├── agent-roster/     agent definitions
+  ├── skills/           SKILL.md packages
+  ├── .tie/             tie.md config and traceability
+  └── src/ …            your code (in Git)
+```
+
+### Workspace
+
+A **workspace** is one project folder that tie.md opens—normally the root of a Git repository that contains an `openspec/` folder. Everything tie.md shows comes from that folder (plus any shared sources you explicitly configure).
+
+```bash
+tie serve ~/code/my-app      # or: cd ~/code/my-app && tie serve
+```
+
+On open, tie.md _detects_ the project—OpenSpec version and changes, Git state, configuration, agents, skills, and traceability data—without writing anything. Missing pieces are reported as missing, not silently created.
+
+### The `.tie/` folder
+
+tie.md keeps its own project data in a small folder at the workspace root, alongside your code:
+
+| File               | Holds                                                                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `.tie/config.yaml` | Workspace configuration: where OpenSpec lives, which agent/skill sources to use, agent bindings, preferences.                           |
+| `.tie/rtm.yaml`    | The [requirements traceability](/docs/concepts/requirements-traceability) data: nodes, confirmed links, baselines, waivers, deliveries. |
+
+Both are plain YAML meant to be committed and reviewed like code. A third kind of tie.md file, `.tie.yaml`, lives _inside_ each OpenSpec change folder (see [Assignment](#assignment)).
+
+### Local service and Studio
+
+`tie serve` starts a **local service** bound to `127.0.0.1` (port `4317` by default) and opens the **Studio**—the tie.md web interface—in your browser through a one-time launch link. No account, no cloud, and no other machine can connect.
+
+The Studio has a few main areas:
+
+| Area                    | Use it to                                                                                             |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Changes**             | See every active change on the board (or as a table), filter, and open one.                           |
+| **Traceability**        | Inspect the requirements matrix, gaps, impact, baselines, and waivers.                                |
+| **Agents** / **Skills** | Browse the roster and skill catalog, their sources, trust, and where they are used.                   |
+| **Activity**            | Follow recent work—Git history and uncommitted edits—and see what is new since your last visit.       |
+| **Archived**            | Search changes that OpenSpec has already archived.                                                    |
+| **Settings**            | Lifecycle terminology, workspace roots, effective configuration and its conflicts, sources and trust. |
+
+The Studio stays live: when you or an agent edit files outside tie.md, the views update.
+
+### Board and change cards
+
+Each active OpenSpec change is one **card** on the **board**. Columns are **derived from evidence**, not set by hand:
+
+**Draft → Ready → In progress → Review → Ready to archive**
+
+A card is in _Review_ because its tasks are complete but validation or verification is still open—not because someone dragged it there. Dragging a card either opens the real action (with confirmation) or explains which evidence is missing. Details in [Board and lifecycle](/docs/project-model).
+
+If your organization uses SAFe-style names, **Settings → Lifecycle terminology** can show _Funnel → Analyzing → Implementing → Validating → Done_ instead, or both. Only labels change; files and paths do not.
+
+### Change workspace
+
+Opening a card shows the **change workspace**: one place with tabs for that change's **Proposal, Design, Specifications, Tasks, Agent & skills** (its assignment), **Validation, Trace,** and **Activity**. You can read Markdown rendered, edit it as source, or use a split view; checking a task in the Studio edits `tasks.md` itself.
+
+### Configuration layers
+
+Configuration comes from two YAML files:
+
+- **User** – `~/.tie/config.yaml`: your personal defaults and shared sources, for every workspace.
+- **Workspace** – `.tie/config.yaml`: settings for this project, committed with it.
+
+They merge field by field and **the workspace wins**. The Studio shows where every effective value came from, and disagreements are shown as conflicts rather than silently resolved. See the [Configuration guide](/docs/configuration).
+
+### Sources, namespaces, and qualified IDs
+
+A **source** is a folder of agent definitions or skills, declared in configuration with a **namespace**:
+
+```yaml
+sources:
+  - namespace: team-agents
+    kind: agents
+    path: ../agent-roster
+```
+
+Every agent and skill gets a **qualified ID**, `namespace:id`—for example `team-agents:builder`. A source inside the workspace is _local_; one outside it (another repo, a company folder) is _shared_. Shared sources are referenced in place, never copied.
+
+### Roster and catalog
+
+The **roster** is the set of agent definitions tie.md resolved from all agent sources; the **skill catalog** is the same for skills. Each entry shows its source path, namespace, trust state, validity, the configuration that bound it (adapter, skills, phases), and which changes use it.
+
+### Adapter
+
+An **adapter** connects tie.md to one coding-agent CLI. v0.1.0 includes adapters for **Codex**, **Claude Code**, and **GitHub Copilot CLI**. The adapter detects whether the CLI is installed, builds its exact command, starts it, streams its output, and stops it. Sign-in, models, and billing stay with the CLI itself.
+
+### Assignment
+
+An **assignment** says who works on a change. It is stored in a small file inside the change folder, `openspec/changes/<change>/.tie.yaml`:
+
+```yaml
+version: 1
+primaryAgent: team-agents:builder
+reviewers: [team-agents:reviewer]
+allowedSkills: [team-skills:testing]
+revision: 01900000-0000-7000-8000-000000000000
+```
+
+- **Primary agent** – the roster agent that implements the change.
+- **Reviewers** – agents (or roles) expected to review it.
+- **Allowed skills** – the only skills the agent may use for this change.
+
+**Assigning starts nothing.** It is a plan, reviewable in Git. The file moves with the change when it is archived.
+
+### Handoff
+
+A **handoff** is the moment you give work to an agent. tie.md first shows a **handoff preview**: the agent, adapter, working directory, allowed skills, inherited `AGENTS.md` instructions, the full instruction text, the exact command, and which environment variables are passed (names only, never values). Nothing runs until you choose **Approve and start**. Cancelling the preview starts nothing.
+
+### Run
+
+An approved handoff becomes a **run**: the agent CLI working in your workspace. While it runs, the **run dock** streams its (redacted) output; you can stop it at any time, which ends the agent and its child processes. Only **one mutating run per workspace** is allowed at a time, so agents never edit over each other.
+
+### Evidence
+
+**Evidence** is what tie.md uses to decide what is true. It comes from things that can be checked—not from what an agent says:
+
+- **Changed files** – tie.md snapshots the workspace before and after a run and reports the real added, modified, deleted, and renamed files. Edits made by someone else during the run are flagged as uncertain.
+- **Validation** – the result of running `openspec validate`, with its exact command and output.
+- **Tests and trace links** – recorded in `.tie/rtm.yaml` and promoted by a person.
+
+An agent saying "all tests pass" changes nothing on its own. It can only _propose_ follow-ups you review.
+
+### Trust gate
+
+Definitions from **shared** sources can always be inspected, but cannot **execute** until you trust that source. Trust is bound to the source's location _and_ content: if its files change, trust is suspended until you review them again. Workspace-local sources are part of your repository and reviewed through Git.
+
+### Conflicts and authoritative files
+
+Your files are shared with editors, CLIs, and agents. When you save in the Studio, tie.md checks that the file has not changed since you opened it; if it has, you choose to reload, compare, or explicitly overwrite. Writes are atomic.
+
+tie.md also keeps a local cache to stay fast. It is **disposable**—derived from your files and rebuilt if deleted. The **authoritative** data is always the files: `openspec/`, `.tie/config.yaml`, `.tie/rtm.yaml`, and each change's `.tie.yaml`.
+
+### Putting it together
+
+A typical cycle:
+
+1. Open the **workspace** with `tie serve`; the **Studio** shows the **board**.
+2. Write or refine a change (proposal, specs, tasks) in the **change workspace**; **validate** it.
+3. **Assign** a roster agent and allowed skills.
+4. Review the **handoff preview** and approve a **run**; watch it in the run dock.
+5. Review the **evidence**—changed files, validation, traceability—and confirm trace links.
+6. When the card reaches **Ready to archive**, confirm the archive.
+
+All terms are also in the [Glossary](/docs/concepts/glossary).
+
+---
+
+## Configuration
+
+tie.md reads two optional YAML files. Neither is required to open a workspace; without them tie.md shows what it detected and what is missing.
+
+| Layer     | Path                           | Typical content                                               |
+| --------- | ------------------------------ | ------------------------------------------------------------- |
+| User      | `~/.tie/config.yaml`           | Shared sources and personal defaults used in every workspace. |
+| Workspace | `<workspace>/.tie/config.yaml` | Project sources, agent bindings, preferences. Commit it.      |
+
+Values merge field by field; **the workspace wins**. The Studio's **Settings** page shows each effective value with the file it came from, and lists disagreements as conflicts. tie.md never rewrites either file to resolve a conflict.
+
+### Example
+
+```yaml
+version: 1 # required
+workspace:
+  root: .. # the project root, relative to this file
+  openspec: ../openspec # the OpenSpec folder
+sources:
+  - namespace: team-agents
+    kind: agents # a folder of agent Markdown files
+    path: ../agent-roster
+    executable: true
+  - namespace: team-skills
+    kind: skills # a folder of SKILL.md packages
+    path: ../skills
+    executable: true
+agents:
+  team-agents:builder:
+    adapter: codex # codex | claude | copilot
+    skills: [team-skills:testing]
+    tags: [implementation]
+    phases: [apply]
+preferences:
+  theme: system
+  terminology: native
+```
+
+### Fields
+
+#### `workspace`
+
+Optional `root` and `openspec` paths. Relative paths resolve from the configuration file that declares them; absolute paths stay absolute. Without them, tie.md uses the folder you opened and its `openspec/` folder.
+
+#### `sources`
+
+Required (use `sources: []` for none). Each source is a folder of agents or skills:
+
+- `namespace` – required; lowercase letters, digits, `.`, `_`, `-`. Becomes the prefix of every ID from that source (`team-agents:builder`).
+- `kind` – `agents`, `skills`, or `openspec`.
+- `path` – relative or absolute folder path.
+- `executable` – whether definitions from this source may be used for runs (shared sources additionally need [trust](#trust)).
+
+Missing or unreadable sources are reported without hiding healthy ones. If two sources contain the same local ID, always use the qualified ID.
+
+#### `agents`
+
+Bindings for roster agents, keyed by qualified ID:
+
+- `adapter` – required: `codex`, `claude`, or `copilot`.
+- `skills` – required list (may be empty) of qualified skill IDs it uses.
+- `tags`, `phases` – optional labels describing the agent's role and when it is used (for example `apply`, `review`, `verify`).
+- `model` – optional model hint passed to the adapter.
+
+An unavailable adapter or skill is a visible blocker, not silently dropped.
+
+#### `preferences`
+
+- `theme` – `system`, `light`, or `dark`.
+- `terminology` – board column labels: `native`, `safe`, or `both`.
+
+### Trust
+
+Sources **outside** the workspace can be browsed while untrusted, but cannot execute. Trusting a source binds to its canonical location and a fingerprint of its files; any change to those files suspends trust until you review it again. Trust decisions are personal and are stored in your user data, never in the workspace.
+
+### What is safe to delete
+
+tie.md keeps a local cache of derived data. You can stop tie.md and delete it at any time; it is rebuilt. **Do not** delete `.tie/config.yaml`, `.tie/rtm.yaml`, the `openspec/` folder, or a change's `.tie.yaml`—those are your project data.
+
+---
+
+## Getting started
+
+This guide takes you from nothing to a running Studio in about ten minutes. If terms like _spec-driven development_, _OpenSpec_, or _change_ are new, read [Concepts](/docs/concepts) first—or keep it open alongside.
+
+### 1. Prerequisites
+
+| You need                        | Why                                                                               | Check                                                      |
+| ------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Git**                         | tie.md reads history and the working tree (it never commits for you).             | `git --version`                                            |
+| **OpenSpec CLI 1.16.x**         | tie.md runs it to list, validate, and archive changes.                            | `openspec --version`                                       |
+| A coding-agent CLI _(optional)_ | Only to run agents: Codex, Claude Code, or GitHub Copilot CLI, already signed in. | `codex --version`, `claude --version`, `copilot --version` |
+
+Install OpenSpec with npm if you do not have it:
+
+```bash
+npm install --global @fission-ai/openspec@1.16
+```
+
+You can explore the board, read and edit changes, validate, and use traceability without any coding agent installed.
+
+### 2. Install tie.md
+
+```bash
+# Linux and macOS
+curl -fsSL https://tie.md/install.sh | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://tie.md/install.ps1 | iex
+```
+
+The installers download the native binary for your platform from the GitHub release and verify its SHA-256 checksum. Prefer npm? See the [installation page](/install) for `npm install --global @tie-md/cli@0.1.0` and manual downloads.
+
+:::note[Release candidate]
+These commands work once v0.1.0 is published. Follow [GitHub](https://github.com/la-rebelion/tie.md) for release status.
+:::
+
+Confirm it works:
+
+```bash
+tie --version
+```
+
+### 3. Have an OpenSpec project
+
+tie.md opens an existing project; it does not create one for you. If your repository has no `openspec/` folder yet:
+
+```bash
+cd ~/code/my-app
+openspec init
+```
+
+Then create a first change, either by asking your coding agent to _propose_ one (OpenSpec installs that workflow) or by hand—see [OpenSpec](/docs/concepts/openspec) for the folder layout.
+
+### 4. Check the workspace (optional)
+
+`tie inspect` reports what tie.md will use, without starting anything or writing a file:
+
+```console
+$ tie inspect ~/code/my-app
+Workspace: /home/you/code/my-app
+OpenSpec: /home/you/code/my-app/openspec
+Git: /home/you/code/my-app
+Writable: yes
+```
+
+### 5. Start the Studio
+
+```console
+$ cd ~/code/my-app
+$ tie serve
+tie.md 0.1.0 serving /home/you/code/my-app
+Studio: http://127.0.0.1:4317/launch?capability=…
+```
+
+Your browser opens the Studio. The link is one-time: it signs this browser in to the local service, which only listens on `127.0.0.1`. Press **Ctrl+C** in the terminal to stop.
+
+| Option                                     | Effect                                                      |
+| ------------------------------------------ | ----------------------------------------------------------- |
+| `tie serve <path>` or `--workspace <path>` | Open a workspace other than the current folder.             |
+| `--port <n>`                               | Use another port (default `4317`). A busy port is an error. |
+| `--no-open`                                | Print the Studio link without opening a browser.            |
+| `tie inspect --json`                       | Machine-readable workspace report.                          |
+
+Exit codes: `0` success, `2` usage error, `3` workspace or data-compatibility problem, `4` service could not start.
+
+### 6. A first tour
+
+1. **Board** (Changes). Each card is one OpenSpec change, placed in a column computed from its files: _Draft, Ready, In progress, Review, Ready to archive_. Cards show task progress, validation state, and assignment.
+2. **Open a card.** The change workspace has tabs for **Proposal, Design, Specifications, Tasks, Agent & skills, Validation, Trace,** and **Activity**. Toggle **Rendered / Source / Split** to read or edit Markdown. Checking a task updates `tasks.md` directly.
+3. **Validate.** Choose **Validate** on the change and see OpenSpec's exact command and diagnostics, mapped to the artifact they concern.
+4. **Agents and Skills.** See what tie.md found in your configured sources, and whether each is valid and trusted.
+5. **Traceability.** If `.tie/rtm.yaml` exists, see which requirements have tests and evidence—and which do not.
+6. **Settings.** Check the effective configuration, its origins, and choose lifecycle terminology.
+
+Make an edit to a change file in your own editor: the Studio updates within a moment.
+
+### 7. Your first supervised run (optional)
+
+Needs a coding-agent CLI and at least one roster agent—see [Configuration](/docs/configuration) and [Agents and skills](/docs/agents-and-skills).
+
+1. In a change, open the **Agent & skills** tab and choose a primary agent and allowed skills. This only writes the change's `.tie.yaml`; nothing runs.
+2. Choose **Start agent run…** and read the **handoff preview**: agent, CLI, working directory, skills, project instructions, the full instruction, and the exact command.
+3. Choose **Approve and start**. Watch output in the **run dock**; **Stop** ends the agent and its child processes.
+4. Review the **changed files** tie.md recorded, re-run validation, and confirm any proposed trace links.
+
+### Recommended workspace layout
+
+```text
+my-app/
+├── openspec/          ← specs and changes (OpenSpec)
+├── agent-roster/      ← agent definitions, one Markdown file each (optional)
+├── skills/            ← SKILL.md packages (optional)
+├── .tie/
+│   ├── config.yaml    ← tie.md workspace configuration (optional)
+│   └── rtm.yaml       ← traceability data (optional)
+├── AGENTS.md          ← project instructions for every agent (optional)
+└── src/
+```
+
+This colocated layout is the default, not a requirement: configuration can point at shared folders elsewhere.
+
+### Troubleshooting
+
+- **"Workspace error" / exit code 3** – the path is not readable, or the workspace's tie.md data was written by a newer version. Run `tie inspect --json` for details.
+- **Port already in use / exit code 4** – another process uses `4317`; pass `--port`.
+- **"OpenSpec not found" or writes blocked** – install OpenSpec 1.16.x and make sure `openspec` is on your `PATH`.
+- **An agent shows as unavailable** – install and sign in to that CLI, then reload; the adapter is probed at startup.
+- **Browser did not open** – copy the `Studio:` link from the terminal (use it once).
+
+Next: understand [the tie.md model](/docs/concepts/tie-md-model), or read the [Board and lifecycle](/docs/project-model) guide.
+
+---
+
+## tie.md documentation
+
+tie.md is a local-first visual control plane for [OpenSpec](/docs/concepts/openspec) projects. It shows your specifications, changes, agent assignments, supervised agent runs, validation, and requirements evidence in one place—without replacing the Markdown files, Git history, or coding agents that already do the work.
+
+> **Current status:** v0.1.0 is a release candidate. Installers go live with the tagged release; follow the [application repository](https://github.com/la-rebelion/tie.md) for status.
+
+### Where to start
+
+| If you…                                        | Start with                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| are new to spec-driven development or OpenSpec | [Concepts](/docs/concepts) — short primers on SDD, OpenSpec, coding agents, and traceability.           |
+| already use OpenSpec and want to try tie.md    | [Getting started](/docs/getting-started) — install, open a workspace, first tour.                       |
+| want to know what tie.md adds and why          | [The tie.md model](/docs/concepts/tie-md-model) — workspace, board, assignment, handoff, run, evidence. |
+| need to configure agents, skills, or sources   | [Configuration](/docs/configuration) and [Agents and skills](/docs/agents-and-skills).                  |
+| care about security and privacy                | [Safety and local-first operation](/docs/safety-and-local-first).                                       |
+
+### The short version
+
+- **OpenSpec remains authoritative.** Lifecycle state comes from its artifacts, commands, and validation.
+- **Files remain the system of record.** Markdown, YAML, and Git outlive the UI; there is no export step if you stop using tie.md.
+- **Agent work is supervised.** Every run shows the agent, skills, instructions, and exact command first, and you approve it.
+- **Evidence beats claims.** Changed files come from before/after snapshots; "tested" and "delivered" need real evidence, not an agent's summary.
+- **Local means local.** The service listens on `127.0.0.1`, works offline, and needs no tie.md account.
+
+### Who it is for
+
+- **Developers** using AI coding agents who want to see and control what those agents do.
+- **Tech leads and reviewers** who need to know which changes are ready, blocked, or waiting for review.
+- **Product managers, analysts, and QA** who need to follow requirements to tests and releases without reading every diff.
+
+---
+
+## Board and lifecycle
+
+New to OpenSpec changes? Read [OpenSpec](/docs/concepts/openspec) first.
+
+One card represents one OpenSpec change. The board is a view over existing artifacts and evidence—not a separate project database.
+
+### Derived board columns
+
+| Column           | Evidence                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------- |
+| Draft            | Required planning artifacts are incomplete.                                                             |
+| Ready            | Required artifacts exist, current validation passes, and no implementation task has started.            |
+| In progress      | A task is complete or an assigned agent run is active, while tasks remain.                              |
+| Review           | Implementation tasks are complete, but validation, traceability, verification, or human review remains. |
+| Ready to archive | Tasks, current checks, trace links, and required verification evidence pass.                            |
+
+Archived changes live in a separate searchable **Archived** view.
+
+#### Terminology
+
+**Settings → Lifecycle terminology** changes only the column labels:
+
+| Native           | SAFe-style   |
+| ---------------- | ------------ |
+| Draft            | Funnel       |
+| Ready            | Analyzing    |
+| In progress      | Implementing |
+| Review           | Validating   |
+| Ready to archive | Done         |
+
+Choose _native_, _SAFe-style_, or _both_. Files, paths, and OpenSpec commands are unaffected.
+
+Dragging a card cannot overwrite this truth. If a move implies an OpenSpec action, tie.md opens a confirmation or explains the missing evidence. If no valid transition exists, the card stays where it was.
+
+### Change workspace
+
+Each change has stable tabs: **Proposal, Design, Specifications, Tasks, Agent & skills, Validation, Trace,** and **Activity**. Tabs for artifacts the change does not have yet are not shown as if they existed.
+
+Missing artifacts remain visibly missing. Multiple specification files and nested capability directories are preserved rather than flattened into one generated document.
+
+### External edits and conflicts
+
+The filesystem is shared with editors, CLIs, and agents. Before saving, tie.md compares the file identity captured when the editor opened with the current file on disk. If it changed, the user must reload, compare, or explicitly overwrite. Writes are atomic, and unrelated Markdown formatting should remain untouched.
+
+---
+
+## Safety and local-first operation
+
+Local-first is an operating constraint, not a decorative label.
+
+### Network boundary
+
+The MVP binds to `127.0.0.1` by default, uses a random session token for local browser access, and is intended to remain fully useful offline. It does not require a tie.md account or upload repository content to a tie.md service.
+
+Your selected coding agent or provider may have its own network and account behavior. tie.md must show the effective adapter and command; it cannot redefine the privacy contract of another tool.
+
+### Filesystem boundary
+
+- Workspace writes stay inside the validated project root.
+- Symlinks and canonical paths are checked before reading or writing.
+- Writes are atomic.
+- External changes produce an explicit conflict instead of silent overwrite.
+- Shared sources are inspected through declared roots and trust rules.
+
+### Execution boundary
+
+Before a mutating run, tie.md previews the effective agent, skills, inherited project instructions, working directory, instruction, and command. The MVP allows one mutating run per workspace at a time and supports cancellation.
+
+Changed-file evidence comes from before-and-after filesystem snapshots, not the agent's self-report. Archive, destructive replacement, and comparable operations require explicit confirmation.
+
+### Logs, telemetry, and secrets
+
+Persistent logs are opt-in. Output is redacted before display or storage, and secret directories are excluded from skill-resource access. MVP telemetry is off by default; any future telemetry must be opt-in and document the exact fields transmitted.
+
+---
+
+## Requirements traceability (Docs)
+
+The requirements traceability matrix (RTM) connects scoped requirements to the artifacts and evidence that support them. New to RTMs? Read [Requirements traceability](/docs/concepts/requirements-traceability) first.
+
+tie.md stores its RTM in `.tie/rtm.yaml`, a versioned YAML file you commit with the project. Comments and unknown fields survive edits made through tie.md.
+
+### The trace graph
+
+A requirement may link forward to:
+
+```text
+requirement → design → task → code → test → defect/change request → release
+```
+
+The same relationships are navigable backward. A test can reveal which requirement it verifies; a changed code artifact can reveal which tests and requirements may be affected.
+
+### Evidence states
+
+tie.md keeps these states separate:
+
+- **Pending:** no implementation evidence is linked.
+- **Designed:** approved design evidence exists.
+- **Built:** implementation evidence exists.
+- **Tested:** a relevant test exists.
+- **Passed:** current linked test evidence passes.
+- **Delivered:** a release or delivery snapshot contains current supporting evidence.
+
+A completed task checkbox is not proof of testing or delivery. Test evidence becomes stale when a material linked requirement or implementation changes after the recorded result.
+
+### Confirmed, derived, and suggested links
+
+- **Confirmed links** are explicitly accepted into `.tie/rtm.yaml`.
+- **Derived links** come from deterministic configured evidence such as a known test report.
+- **Suggested links** may come from Git or an agent and remain non-authoritative until reviewed.
+
+Suggested links never increase official coverage on their own.
+
+### Baselines and scope movement
+
+Named baselines snapshot approved requirement scope. The RTM can then show additions, changes, removals, waivers, and work that entered without an approved requirement. Baselines are lightweight scope controls, not a replacement for Git history or an external test-management system.
