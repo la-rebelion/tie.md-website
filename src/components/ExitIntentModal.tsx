@@ -121,7 +121,7 @@ export default function ExitIntentModal() {
           tie.md is being shaped in the open. Get the useful milestones, early
           previews, and field notes as the control plane comes together.
         </p>
-        <NewsletterForm />
+        <NewsletterForm onSuccess={dismiss} />
       </div>
     </div>
   );

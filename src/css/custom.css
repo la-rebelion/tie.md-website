@@ -285,6 +285,26 @@ body {
   color: #9cdeeb;
 }
 
+.tie-newsletter-thanks {
+  background: rgba(8, 174, 166, 0.1);
+  border: 1px solid rgba(44, 199, 191, 0.35);
+  border-radius: 12px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.1rem 1.2rem;
+}
+
+.tie-newsletter-thanks strong {
+  color: #eef2f6;
+  font-size: 1.05rem;
+}
+
+.tie-newsletter-thanks span {
+  color: #c4ced8;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 600px) {
   .tie-modal {
     max-height: calc(100vh - 2rem);

@@ -1,14 +1,50 @@
-import React from "react";
+import React, { startTransition, useEffect, useRef, useState } from "react";
 
-const subscribeUrl = "https://go.rebelion.la/subscribe";
+type NewsletterFormProps = {
+  onSuccess?: () => void;
+};
 
-export default function NewsletterForm() {
+export default function NewsletterForm({ onSuccess }: NewsletterFormProps) {
+  const [email, setEmail] = useState("");
+  const [showThankYou, setShowThankYou] = useState(false);
+  const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (confirmationTimer.current) clearTimeout(confirmationTimer.current);
+    },
+    [],
+  );
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    // Keep the form in place until the native submit event has finished
+    // propagating so HubSpot's non-HubSpot-form listener can collect it.
+    window.setTimeout(() => setShowThankYou(true), 0);
+    confirmationTimer.current = setTimeout(() => {
+      onSuccess?.();
+      setShowThankYou(false);
+      startTransition(() => setEmail(""));
+    }, 3000);
+  }
+
+  if (showThankYou) {
+    return (
+      <div className="tie-newsletter-thanks" role="status" aria-live="polite">
+        <strong>You’re on the list.</strong>
+        <span>We’ll send the useful milestones—not the noise.</span>
+      </div>
+    );
+  }
+
   return (
     <form
-      action={subscribeUrl}
+      action="#"
       className="tie-newsletter-form"
-      method="get"
+      method="post"
       name="tie-md-newsletter"
+      onSubmit={handleSubmit}
     >
       <label className="tie-newsletter-field" htmlFor="tie-newsletter-email">
         <span>Email address</span>
@@ -16,9 +52,11 @@ export default function NewsletterForm() {
           autoComplete="email"
           id="tie-newsletter-email"
           name="email"
+          onChange={(event) => setEmail(event.target.value)}
           placeholder="you@workshop.dev"
           required
           type="email"
+          value={email}
         />
       </label>
       <input
