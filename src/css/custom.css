@@ -273,6 +273,11 @@ body {
   background: #e58a6b;
 }
 
+.tie-newsletter-submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .tie-newsletter-note {
   color: #9aa7b5;
   font-size: 0.72rem;
@@ -283,6 +288,14 @@ body {
 
 .tie-newsletter-note a {
   color: #9cdeeb;
+}
+
+.tie-newsletter-error {
+  color: #ffab8a;
+  font-size: 0.78rem;
+  grid-column: 1 / -1;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .tie-newsletter-thanks {

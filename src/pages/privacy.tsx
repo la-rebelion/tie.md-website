@@ -101,17 +101,20 @@ export default function Privacy() {
           </li>
         </ul>
         <p>
-          If you decline or never answer, neither is loaded and no tracking
-          cookies are set. Your choice is stored only in your browser (
-          <code>localStorage</code>).
+          If you decline or never answer, neither is loaded for passive
+          analytics and no tracking cookies are set. Your choice is stored only
+          in your browser (<code>localStorage</code>).
         </p>
         <ConsentControls />
 
         <h2>Newsletter</h2>
         <p>
-          The newsletter form sends the email address you type to La Rebelion
-          Labs at <code>go.rebelion.la</code> only when you submit it. You can
-          unsubscribe from any message.
+          When you begin entering an email in the newsletter form, the site
+          loads the La Rebelion Labs HubSpot collector so it is ready before you
+          submit. It sends the email address only when you submit the form. This
+          happens even if you declined passive analytics because it is necessary
+          to complete the subscription you requested. You can unsubscribe from
+          any message.
         </p>
 
         <h2>Contact</h2>

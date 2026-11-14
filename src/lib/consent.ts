@@ -1,7 +1,7 @@
 /**
- * Consent-gated analytics. Nothing third-party loads until the visitor accepts:
- * Google Tag Manager and HubSpot tracking are injected only after an explicit "Accept",
- * and the choice can be changed at any time from /privacy.
+ * Consent-gated analytics. Google Tag Manager and passive HubSpot tracking load
+ * after an explicit "Accept". HubSpot may also load when a visitor explicitly
+ * submits the newsletter form so it can receive that requested submission.
  */
 export const CONSENT_KEY = "tie-analytics-consent";
 export const CONSENT_EVENT = "tie-consent-change";
@@ -41,7 +41,10 @@ export function writeConsent(value: Consent | undefined) {
 }
 
 function analyticsLoaded() {
-  return Boolean(document.getElementById("tie-gtm"));
+  return Boolean(
+    document.getElementById("tie-gtm") ||
+    document.getElementById("hs-script-loader"),
+  );
 }
 
 function inject(id: string, src: string) {
@@ -54,9 +57,87 @@ function inject(id: string, src: string) {
 }
 
 export function loadAnalytics() {
-  if (analyticsLoaded()) return;
-  window.dataLayer = window.dataLayer ?? [];
-  window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
-  inject("tie-gtm", `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`);
-  inject("hs-script-loader", `https://js.hs-scripts.com/${HUBSPOT_ID}.js`);
+  if (!document.getElementById("tie-gtm")) {
+    window.dataLayer = window.dataLayer ?? [];
+    window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+    inject("tie-gtm", `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`);
+  }
+  void loadHubSpot();
+}
+
+let hubSpotPromise: Promise<void> | undefined;
+
+async function waitForCollectedForms() {
+  const deadline = Date.now() + 10_000;
+  while (Date.now() < deadline) {
+    const ready = performance
+      .getEntriesByType("resource")
+      .some((entry) =>
+        entry.name.includes("hscollectedforms.net/collectedforms.js"),
+      );
+    if (ready) {
+      // Give the collector one task to bind the forms it just scanned.
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+      return;
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, 100));
+  }
+  throw new Error("HubSpot form collection is unavailable.");
+}
+
+/** Load only HubSpot and resolve after its collector is ready to inspect forms. */
+export function loadHubSpot(): Promise<void> {
+  if (hubSpotPromise) return hubSpotPromise;
+
+  hubSpotPromise = new Promise((resolve, reject) => {
+    const existing = document.getElementById(
+      "hs-script-loader",
+    ) as HTMLScriptElement | null;
+    if (existing?.dataset.loaded === "true") {
+      resolve();
+      return;
+    }
+
+    const script = existing ?? document.createElement("script");
+    let timeoutId: number;
+    let settled = false;
+    const cleanup = () => {
+      window.clearTimeout(timeoutId);
+      script.removeEventListener("load", handleLoad);
+      script.removeEventListener("error", handleError);
+    };
+    const handleLoad = async () => {
+      try {
+        await waitForCollectedForms();
+        if (settled) return;
+        settled = true;
+        script.dataset.loaded = "true";
+        cleanup();
+        resolve();
+      } catch {
+        handleError();
+      }
+    };
+    const handleError = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      hubSpotPromise = undefined;
+      if (!existing) script.remove();
+      reject(new Error("HubSpot could not be loaded."));
+    };
+
+    script.addEventListener("load", handleLoad, { once: true });
+    script.addEventListener("error", handleError, { once: true });
+    timeoutId = window.setTimeout(handleError, 12_000);
+
+    if (!existing) {
+      script.id = "hs-script-loader";
+      script.async = true;
+      script.src = `https://js.hs-scripts.com/${HUBSPOT_ID}.js`;
+      document.head.appendChild(script);
+    }
+  });
+
+  return hubSpotPromise;
 }
